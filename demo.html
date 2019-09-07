@@ -1,0 +1,1914 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>中文图书高级检索</title>
+<link href="/style/newstyle/headfoot.css" rel="stylesheet" type="text/css"/>
+<link href="/style/newstyle/global.css" rel="stylesheet" type="text/css"/>
+<link href="/style/newstyle/booksearch.css" rel="stylesheet" type="text/css"/>
+<link href="/style/newstyle/search.css" rel="stylesheet" type="text/css"/>
+<link href="/style/newstyle/senior_search.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="http://www.duxiu.com/style/top.css"/>
+<script type="text/javascript" src="http://www.duxiu.com/views/js/jquery.min.js"></script>
+<script language="JavaScript" src="/js/inc.js"></script>
+<script language="JavaScript" src="/js/subebook.js"></script>
+<script language="JavaScript" src="/js/addlimitbook.js"></script>
+<script language="JavaScript" src="/js/leftajax.js"></script>
+<script type="text/javascript" src="/js/suggest.js"></script>
+<script language="JavaScript" src="/views/js/fun.js"></script>
+<script language="JavaScriptv" src="/views/js/dxpublic.js"></script>
+<script language="JavaScript" src="http://www.duxiu.com/js/top.js"></script>
+<script language="JavaScript" src="http://www.duxiu.com/js/setpage.js"></script>
+<script language="JavaScript" src="http://www.duxiu.com/js/lang.js"></script>
+<script>
+	jQuery(document).ready(function(){changeLanguage(); })
+</script>
+<script language="javascript">
+	<!--
+	var advck=new Cookie();
+
+	var advAdid=advck.GetValue('AID_dsr');
+	String.prototype.trim = function()
+	{
+		var patrn="\\||\\!|\\@|\#|\$|\\%|\\^|\\&|\\*|\\(|\\)|\\_|\\+|\\-|\\}|\\{|\\/|\\.|\\,|\\?|\\>|\\<|\\~|\\、|\\】|\\【|\\‘|\\；|\\’|\\、|\\。|\\，|\\￥|\\……|\\）|\\（|\\！";
+		return this.replaceAll(patrn,"");
+	}
+	var itype="";
+
+	function setyear(){
+		var i,dst,j;
+		idate=new Date();
+		dst=idate.getFullYear();
+		Begin=document.f1.BeginBox;
+		j=1;
+		for (i=dst;i>=1820;i--)
+		{
+			Begin.options[j]=new Option(i+"年",i);
+			j++;
+		}
+		Begin.options[j++]=new Option("小于1820年",1000);
+		Begin.length=j;
+		Begin.options[0].selected;
+
+	    location.href = "#searchinfo"; 
+	}
+
+	
+	function changeyear(){
+		var i,dst,src,j;
+		idate=new Date();
+		dst=idate.getFullYear();
+		Begin=document.f1.BeginBox;
+		End=document.f1.EndBox;
+		if (parseInt(Begin.selectedIndex)==0) 
+		{
+			End.options[0] = new Option("请先选择开始年代",-1);
+			End.length = 1;
+		}
+		else
+		{
+			src=Begin.options[parseInt(Begin.selectedIndex)].value;
+			if (src==1000) 
+			{
+				End.options[0] = new Option("--",1820);
+				End.length = 1;
+			}else{
+				j=0;
+				for (i=dst;i>=src;i--)
+				{
+					End.options[j]=new Option(i+"年",i);
+					j++;
+				}
+				End.length=j;
+			}
+		}
+	}
+	
+	function setyear(beginyear,endyear){
+		var i,dst,j,k=0;
+		idate=new Date();
+		dst=idate.getFullYear();
+		Begin=document.f1.BeginBox;
+		j=1;
+		for (i=dst;i>=1820;i--)
+		{
+			Begin.options[j]=new Option(i+"年",i);
+			if(i==beginyear){
+				k = j;
+			}
+			j++;
+		}
+		if(beginyear==1000)
+			k = j;
+		Begin.options[j++]=new Option("小于1820年",1000);
+		Begin.length=j;
+		Begin.options[k].selected=true;
+		changeyear(endyear);
+	}
+	
+	function changeyear(endyear){
+		var end =  endyear;
+		
+		var i,dst,src,j,k;
+		idate=new Date();
+		dst=idate.getFullYear();
+		Begin=document.f1.BeginBox;
+		End=document.f1.EndBox;
+		if (parseInt(Begin.selectedIndex)==0) 
+		{
+			End.options[0] = new Option("请先选择开始年代",-1);
+			End.length = 1;
+		}
+		else
+		{
+			src=Begin.options[parseInt(Begin.selectedIndex)].value;
+			if (src==1000) 
+			{
+				End.options[0] = new Option("--",1819);
+				End.length = 1;
+			}else{
+				j=0;
+				//End.options[0] = new Option("--",dst);
+				for (i=dst;i>=src;i--)
+				{
+					End.options[j]=new Option(i+"年",i);
+					if( typeof(end)!="undefined" && end != '-1' ){//选择了  结束年份
+						if( end == i){
+							k = j;
+						}
+					}
+					j++;
+				}
+				End.length=j;
+				if(k != 0 && k != '0'){
+					End.options[k].selected=true;
+				}
+				
+			}
+		}
+	}
+	
+	function checksub(){
+		
+		if(document.f1.ISBN.value.trim()!=""&&document.f1.ISBN.value.trim().length<10){
+			alert("ISBN最少匹配长度为10!");
+			return false;
+		}else if(document.f1.publish.value.trim()!=""){
+			if(document.f1.Book.value.trim()!="" || document.f1.Author.value.trim()!=""){
+				return true;
+			}else{
+				alert("按出版社检索必须同时检索书名或作者！");
+				return false;
+			}
+		}else if(document.f1.cnfenlei.value.trim()!=""){
+		if(document.f1.Book.value.trim()!="" || document.f1.Author.value.trim()!=""){
+			return true;
+		}else{
+			alert("按中图分类号检索必须同时检索书名或作者！");
+			return false;
+		}
+		}else if(document.f1.fenleiID.value.trim()!=""){
+			if(document.f1.Book.value.trim()!="" || document.f1.Author.value.trim()!=""){
+			return true;
+		}else{
+			alert("按分类检索必须同时检索书名或作者！");
+			return false;
+		}
+		}else if(document.f1.BeginBox.value.trim()!=""&&document.f1.BeginBox.value.trim()!="1"){
+			if(advAdid=="901"){
+				return true;
+			}else{
+				if(document.f1.Book.value.trim()!="" || document.f1.Author.value.trim()!=""){
+					return true;
+				}else{
+					alert("按出版时间检索必须同时检索书名或作者！");
+					return false;
+				}
+			}
+			
+		}else if(document.f1.Book.value!="" || document.f1.Author.value!="" || document.f1.Word.value!=""||document.f1.ISBN.value.trim().length>=10){
+			return true;
+		}else{
+			alert("请输入检索词！");
+			return false;
+		}
+		
+	}
+	-->
+</script>
+<script type="text/javascript" src="http://www.duxiu.com/views/js/jquery.min.js"></script>
+</head>
+<body>
+<script language="JavaScript">
+	var fenleiID = '01'
+	var sWord='rn=50&ecode=utf-8&channel=search';
+	var topFl='01';
+	var servlet='advsearch';
+	var xml="classify.xml";
+	function setSwvalue(){
+		var sw=document.getElementById("topsw").value;
+		if(sw==''){
+			document.getElementById("topsw").value='';
+		}
+	}
+</script>
+<script language="JavaScript" src="/js/list.js"></script>
+
+
+	
+
+
+
+
+<div class="header">
+	<div class="wrap">
+		<div class="logo leftF">
+			
+				<a href="/"><img src="/images/units_logo/logosmall_1247.jpg"/></a>      
+			
+		</div>
+		<div class="searchNav">
+			<a class="cur" href="javascript:void(0)" style="color: rgb(51, 51, 51);">中文图书高级检索</a>
+			<div>
+				<ul>
+					<li><a href="http://jour.duxiu.com/advsearchmag.jsp">中文期刊高级搜索</a></li><li><a href="/goFblyun.jsp?domain=duxiu&gourl=advsearchenmag.jsp">外文期刊高级搜索</a></li><li><a href="http://newspaper.duxiu.com/advsearchnp.jsp">报纸高级搜索</a></li><li><a href="http://jour.duxiu.com/advsearchthesis.jsp">中文学位论文高级搜索</a></li><li><a href="/goFblyun.jsp?domain=duxiu&gourl=advsearchfthesis.jsp">外文学位论文高级搜索</a></li><li><a href="http://jour.duxiu.com/advsearchcp.jsp">中文会议论文高级搜索</a></li><li><a href="/goFblyun.jsp?domain=duxiu&gourl=advsearchfcp.jsp">外文会议论文高级搜索</a></li><li><a href="http://book.duxiu.com/advsearchpatent.jsp">中文专利高级搜索</a></li><li><a href="http://book.duxiu.com/advsearchbz.jsp">中文标准高级搜索</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="switch leftF">
+			<a href="/expsearch.jsp">切换至专业检索</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="advmain">
+	<div class="searchForm book_Form">
+		<form name="f1" action="advsearch" method="post" onSubmit="return checksub();"> 
+			<dl>
+				<dt>书名：</dt>
+				<dd>
+					<select style="width:58px;" name= "bstype" class="select_con">
+						<option value = "1">包含</option>
+						<option value = "2" >等于</option>
+						
+					</select>
+					<input style="width:220px; margin-left:10px;" name="Book" value="" class="fidtext">
+					<a href="javascript:advselect('book');"></a>
+					<span class="annot_text">要搜索的图书书名</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>作者：</dt>
+				<dd>
+					<input class="fidtext" name="Author" value="" >
+					<a href="javascript:advselect('author');"></a>
+					<span class="annot_text">要搜索的图书作者</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>主题词：</dt>
+				<dd>
+					<input class="fidtext" name="Word"  value="" ><a href="javascript:advselect('word');"></a>
+					<span class="annot_text">要搜索的图书主题词</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>出版社：</dt>
+				<dd>
+					<input class="fidtext" name="publish"  value="" ><a href="javascript:advselect('publish');"></a>
+					<span class="annot_text">要搜索的图书出版社</span>
+				</dd>
+			</dl>
+			<dl>	
+				<dt>ISBN：</dt>
+				<dd>
+					<input class="fidtext" name="ISBN"  value = ""><a href="javascript:advselect('ISBN');"></a>
+					<span class="annot_text">要搜索的图书ISBN,最少匹配长度为10</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>分类：</dt>
+				<dd>
+					<select name= "fenleiID" class="select_con" style="width: 302px">
+						<option value = "" >全部分类</option>
+						<option value = "01" selected
+>马克思主义、列宁主义、毛泽东思想、邓小平理论</option>
+						<option value = "02" >哲学、宗教</option>
+						<option value = "03" >社会科学总论</option>
+						<option value = "04" >政治、法律</option>
+						<option value = "05" >军事</option>
+						<option value = "06" >经济</option>
+						<option value = "07" >文化、科学、教育、体育</option>
+						<option value = "08" >语言、文字</option>
+						<option value = "09" >文学</option>
+						<option value = "10" >艺术</option>
+						<option value = "11" >历史、地理</option>
+						<option value = "12" >自然科学总论</option>
+						<option value = "13" >数理科学和化学</option>
+						<option value = "14" >天文学、地球科学</option>
+						<option value = "15" >生物科学</option>
+						<option value = "16" >医药、卫生</option>
+						<option value = "17" >农业科学</option>
+						<option value = "18" >工业技术</option>
+						<option value = "19" >交通运输</option>
+						<option value = "20" >航空、航天</option>
+						<option value = "21" >环境科学、安全科学</option>
+						<option value = "22" >综合性图书</option>
+					</select>
+					<span class="annot_text">要搜索的图书分类</span>
+                </dd>
+			</dl>
+			<dl>
+				<dt>中图分类号：</dt>
+				<dd>
+					<input class="fidtext" name="cnfenlei"  value = ""><a href="javascript:advselect('ISBN');"></a>
+					<span class="annot_text">要搜索的图书中图分类号</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>年代：</dt>
+				<dd>
+					<select style="width:84px;" class="select_con" name="BeginBox" onChange="javascript:changeyear();">
+						<option value=-1>请选择</option>
+					</select>
+					<span class="to_text">至</span>
+					<select style="width:178px;" class="select_con" name="EndBox">
+						<option value=-1>请先选择开始年代</option>
+					</select>
+					<a href="javascript:advselect('fenleiID');"></a>
+					<span class="annot_text">要搜索的图书出版年代</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>搜索结果显示条数：</dt>
+				<dd>
+					<select name="rn" class="select_con" style="width:302px">
+						<option value="10" >每页显示10条</option>
+						<option value="15" >每页显示15条</option>
+						<option value="30" >每页显示30条</option>
+						<option value="50"  selected >每页显示50条</option>
+					</select>
+					<input name = "channel" type = "hidden" value = "advsearch">
+					<input name = "ecode" type = "hidden" value = "utf-8">
+					<span class="annot_text">选择搜索结果显示的条数</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd><input class="btnInput" type="submit" value="高级搜索"/></dd>
+			</dl>
+		</form>
+	</div>
+</div>
+<script>
+	//<![CDATA[
+	jQuery(document).ready(function(){
+		var timer;
+		jQuery(".searchNav").hover(function(){
+			jQuery(this).find(".cur").css("color","#0066CC");
+			jQuery(this).find("div").show();
+			clearTimeout(timer);
+		},function(){
+			timer = setTimeout(function(){
+				jQuery(".searchNav .cur").css("color","#333");
+				jQuery(".searchNav div").hide();
+			},500);
+		});
+		setyear(-1,-1);
+		location.href = "#searchinfo"; 
+		jQuery("#service").hover(function(){
+			jQuery(this).closest(".wrap").addClass("serviceWrap");
+		});
+		jQuery(".wrap").hover(function(){
+			
+		},function(){
+			jQuery(".wrap").removeClass("serviceWrap");	
+		});
+		
+		jQuery("#manage").click(function(){
+			jQuery(".manage").show();	
+		});
+		jQuery("#check").click(function(){
+			jQuery(".manage").hide();	
+		});
+		jQuery("#quite").click(function(){
+			jQuery(".manage").hide();	
+		});
+		
+		jQuery("#industry").hover(function(){
+			jQuery(this).closest(".wlap").addClass("industryWrap");
+		});
+		jQuery(".wlap").hover(function(){
+			
+		},function(){
+			jQuery(".wlap").removeClass("industryWrap");	
+		});
+	});
+	//]]>
+</script>
+
+		<div style="height:5px; clear:both;background: url(/images/newbook/head_bd.png) repeat-x bottom;"></div>
+		<div class="wrap">
+			<input type="hidden" name="bid" value=""/>
+			<input type="hidden" name="tp" value="3"/>
+			<div class="main_left leftF">
+				
+					
+						<div class="content_left">
+							<h2><span>图书导航</span></h2>
+							<ul><li><a href="/book.do?go=guideindex" target = "_blank">分类导航</a></li></ul>
+						</div>
+						
+					<div class="content_left">
+						
+							<h2><span>类型</span></h2><ul><li><a href="advsearch?rn=50&ecode=utf-8&sectyear=&fenleiID=01&authid=0&btype=0&adminid=1247&pid=0&seb=0&showc=">本馆馆藏纸书(1904)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&sectyear=&fenleiID=01&authid=0&btype=1&adminid=1247&pid=0&seb=0&showc=">本馆电子全文(3935)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&sectyear=&fenleiID=01&authid=0&btype=100&adminid=1247&pid=0&seb=0&showc=">在线试读(12499)</a></li>
+						
+					</div>
+					<div class="content_left">
+						<h2><span>年代</span><b class="icons"></b></h2><ul><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2019">2019(100)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2018">2018(578)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2017">2017(528)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2016">2016(488)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2015">2015(450)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2014">2014(750)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2013">2013(928)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2012">2012(438)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2011">2011(429)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2010">2010(319)</a></li><div id = 'moreyear' style = 'display:none;'><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2009">2009(463)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2008">2008(336)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2007">2007(281)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2006">2006(378)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2005">2005(453)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2004">2004(851)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2003">2003(710)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2002">2002(498)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2001">2001(520)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=2000">2000(491)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1999">1999(412)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1998">1998(371)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1997">1997(237)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1996">1996(217)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1995">1995(195)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1994">1994(252)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1993">1993(863)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1992">1992(359)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1991">1991(320)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1990">1990(343)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1980-1989">1980-1989(2263)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1970-1979">1970-1979(4634)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=1960-1969">1960-1969(2131)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&authid=0&sectyear=100-1959">其它(5196)</a></li><div><a href="javaScript:" onclick="showhidden('hiddenyear','moreyear')">隐藏</a></div></div><div id="hiddenyear"><a href="javaScript:" onclick="showhidden('moreyear','hiddenyear')">更多...</a></div></ul>
+					</div>
+					<div id="chartpar" style=" background-color: #FFFFFF;border: 5px solid #CDCDCD;left: 50%;display: none;margin-left: -345px;padding: 1px;position: absolute;width: 686px;z-index: 9999;">
+						<a style="position:absolute;width:16px;height:16px;right:10px;top:10px;" href="javascript:showTrend();"><img src="/images/trend/close.jpg"/></a>
+						<div id="chartdiv" style="display: none;"></div>
+					</div>
+					<div class="content_left">
+						<h2><span>学科</span><b class="icons"></b></h2><ul class="tba_list"><li class="tba_cont"><a class="current" href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&sectyear=&authid=0" title="马克思主义、列宁主义、毛泽东思想、邓小平理论">马克思主义、列...</a><a class="dele icons" href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=&sectyear=&authid=0"></a><ul style="display:block"><li><a title="马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0108&sectyear=&authid=0'>马克思主义、列...(15016)</a></li><li><a title="马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0107&sectyear=&authid=0'>马克思、恩格斯...(4202)</a></li><li><a title="毛泽东著作" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0104&sectyear=&authid=0'>毛泽东著作(2358)</a></li><li><a title="列宁著作" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0102&sectyear=&authid=0'>列宁著作(1928)</a></li><li><a title="马克思、恩格斯著作" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0101&sectyear=&authid=0'>马克思、恩格斯...(1797)</a></li><li><a title="马克思、恩格斯、列宁、斯大林、毛泽东、邓小平著作汇编" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0106&sectyear=&authid=0'>马克思、恩格斯...(1570)</a></li><div id = 'morefenlei' style = 'display:none;'><li><a title="斯大林著作" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0103&sectyear=&authid=0'>斯大林著作(637)</a></li><li><a title="邓小平著作" href='advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=0105&sectyear=&authid=0'>邓小平著作(124)</a></li><div><a href="javaScript:" onclick="getMoreFenlei('false')">隐藏</a></div></div><div id = 'fenleimore' ><a href="javaScript:" onclick="getMoreFenlei('true')">更多..</a></div>
+					</div>
+					<div class="content_left">
+						<h2><span>作者</span><b class="icons"></b></h2><ul><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=3321">毛泽东(1175)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=23733">马克思(771)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=119436">郭大力(128)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=60814">曹葆华(92)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=10976">王亚南(80)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=7635">张素华(51)</a></li><div id = 'moreauthor' style = 'display:none;'><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=2811">李捷(51)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=190282">蒋建农(47)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=9408">陈晋(47)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=138445">逄先知(46)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=54692">邓力群(45)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=199456">刘金田(44)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=36665">邓小平(43)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=147682">张仲实(40)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=217829">吴黎平(35)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=85959">陈登才(35)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=38886">李慎明(34)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=14176">石仲泉(34)</a></li><li><a href="advsearch?rn=50&ecode=utf-8&adminid=&btype=&seb=0&pid=0&showc=0&fenleiID=01&sectyear=&authid=41888">杨金海(33)</a></li><div><a href="javaScript:" onclick="getMoreAuthor('false')">隐藏</a></div></div><div id = 'authormore'><a href="javaScript:" onclick="getMoreAuthor('true')">更多...</a></div></ul>
+					</div>
+				
+			</div>
+			<div class="main_center">
+				<div id="searchinfo" name="searchinfo" class="find_top">
+					<span class="leftF">
+						找到相关的<font color="red">中文图书</font> <b>27782 种,用时 0.01 秒</b>&nbsp;&nbsp;&nbsp;
+						 当前为第 <font color="red">1</font> 页 共 <font color="red">556</font> 页 
+					</span>
+					<div class="mrpx rightF">
+						
+		                    <dl class="select">
+			                    <dt class="cur">默认排序</dt>
+								<dd style="display: none;">
+									<ul>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=">默认排序</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=1">书名</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=2">作者</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=3">时间降序</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=4">时间升序</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=5">访问量</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=6">收藏量</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=7">引用量</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=8">点评量</a></li>
+										<li><a href = "advsearch?rn=50&ecode=utf-8&fenleiID=01&btype=&adminid=&Sort=9">电子馆藏</a></li>
+									</ul>
+								</dd>
+		                    </dl>
+						
+		            </div>
+				</div>
+				<div class="books">
+					<ul>
+				
+				
+						<li>
+							<input type="hidden" id="title0" name="f[0].title" value="马克思主义经典著作研究读本  列宁《共产主义运动中的“左派”幼稚病》"/>
+							<input type="hidden" id="url0" name="f[0].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016523164&d=2698808B67B6D6CF50D07D0AF4703FE8&fenlei=01080201"/>  
+							<input type="hidden" id="memo0" name="f[0].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676A6A686771686D5E9CADB0A1AD5E693130353834373538' width=75 border=1></TD><TD><dd>作者:吴克明编著&nbsp;&nbsp;</dd><dd>页数:272&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.03&nbsp;&nbsp;</dd><dd>简介:本书围绕《共产主义运动中的“左派”幼稚病》这一经典文献展开研究，主要由历史考证（包括写作背景、国内外主要版本和传播情况）、研究状况（含国内外的研究状况）、当代解读（包括文本的基本结构和主要内容、重要理论观点及其当代意义）、经典著作选编和附录等部分构成。全书充分结合历史和现实背景，全面解读列宁《共产主义运动中的“左派”幼稚病》，点评和启示简明透彻，能对马克思主义理论及其中国化发展史与传播史、科学社会主义和国际共产主义运动等学科领域研究起到较重要的参考价值。&nbsp;&nbsp;</dd><dd>主题词:《共产主义运动中的“左派”幼稚病-》--列宁著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid0" name="f[0].dxid" value="000016523164"/>
+							<input type="hidden" id="ssid0" name="f[0].ssid" value="14220905"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016523164&d=2698808B67B6D6CF50D07D0AF4703FE8&fenlei=01080201" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676A6A686771686D5E9CADB0A1AD5E693130353834373538" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016523164&d=2698808B67B6D6CF50D07D0AF4703FE8&fenlei=01080201" target="_blank">《马克思主义经典著作研究读本  列宁《共产主义运动中的“左派”幼稚病》》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000016523164&unitid=1247&d=DC9BCB34D40B7125A50BD2E615F5E117&timestr=1567738446276" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016523164&ssnum=14220905&d=FEEAA7E19DDC60E2BD1DF88AAD15B8BB&fenlei=01080201" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:吴克明编著&nbsp;&nbsp;</dd><dd>页数:272&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.03&nbsp;&nbsp;</dd><dd>简介:本书围绕《共产主义运动中的“左派”幼稚病》这一经典文献展开研究，主要由历史考证（包括写作背景、国内外主要版本和传播情况）、研究状况（含国内外的研究状况）、当代解读（包括文本的基本结构和主要内容、重要理论观点及其当代意义）、经典著作选编和附录等部分构成。全书充分结合历史和现实背景，全面解读列宁《共产主义运动中的“左派”幼稚病》，点评和启示简明透彻，能对马克思主义理论及其中国化发展史与传播史、科学社会主义和国际共产主义运动等学科领域研究起到较重要的参考价值。&nbsp;&nbsp;</dd><dd>主题词:《共产主义运动中的“左派”幼稚病-》--列宁著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010802">列宁主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080201">列宁著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title1" name="f[1].title" value="马克思对资本的批判及其现实意义"/>
+							<input type="hidden" id="url1" name="f[1].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015862631&d=3E647E68299A1EDDDE978E361A559FA8&fenlei=010801010634"/>  
+							<input type="hidden" id="memo1" name="f[1].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B67716E69676B6E6F5E9CADB0A1AD5E693130353834373538' width=75 border=1></TD><TD><dd>作者:彭飞著&nbsp;&nbsp;</dd><dd>页数:223&nbsp;&nbsp;</dd><dd>出版社:苏州：苏州大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.01&nbsp;&nbsp;</dd><dd>简介:本书采用了“一体两翼”的叙事方式，一方面，对马克思的资本批判的理论基础进行历史的梳理和阐述，从理论和事实两个逻辑出发阐述了马克思资本批判思想的主要内容。另一方面，用马克思资本批判理论观照现实，从现实出发考察资本的发展规律，阐述了列宁的帝国主义思想和现代资本主义的新理论以及中国特色社会主义条件下的资本运动思想。通过这一叙事方式，展现出资本在……&nbsp;&nbsp;</dd><dd>主题词:马克思主义-资本-哲学-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid1" name="f[1].dxid" value="000015862631"/>
+							<input type="hidden" id="ssid1" name="f[1].ssid" value="13961367"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015862631&d=3E647E68299A1EDDDE978E361A559FA8&fenlei=010801010634" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B67716E69676B6E6F5E9CADB0A1AD5E693130353834373538" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015862631&d=3E647E68299A1EDDDE978E361A559FA8&fenlei=010801010634" target="_blank">《马克思对资本的批判及其现实意义》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015862631&unitid=1247&d=B2A96A7E3C052AEF584F60CA2300625F&timestr=1567738446276" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015862631&ssnum=13961367&d=1ADA0E0FACEFA6B80A1FCC3B4096D34A&fenlei=010801010634" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:彭飞著&nbsp;&nbsp;</dd><dd>页数:223&nbsp;&nbsp;</dd><dd>出版社:苏州：苏州大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.01&nbsp;&nbsp;</dd><dd>简介:本书采用了“一体两翼”的叙事方式，一方面，对马克思的资本批判的理论基础进行历史的梳理和阐述，从理论和事实两个逻辑出发阐述了马克思资本批判思想的主要内容。另一方面，用马克思资本批判理论观照现实，从现实出发考察资本的发展规律，阐述了列宁的帝国主义思想和现代资本主义的新理论以及中国特色社会主义条件下的资本运动思想。通过这一叙事方式，展现出资本在……&nbsp;&nbsp;</dd><dd>主题词:马克思主义-资本-哲学-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title2" name="f[2].title" value="经典悦读丛书  共产主义的原貌  马克思  1844年经济学哲学手稿"/>
+							<input type="hidden" id="url2" name="f[2].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016104231&d=4F99F73E87821F1233E865FB691B72A3&fenlei=010801010234"/>  
+							<input type="hidden" id="memo2" name="f[2].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=66696466656C646969685B99AAAD9EAA5B663130353838363035' width=75 border=1></TD><TD><dd>作者:陈培永，周峰&nbsp;&nbsp;</dd><dd>页数:124&nbsp;&nbsp;</dd><dd>出版社:广州：广东人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.07&nbsp;&nbsp;</dd><dd>主题词:《1844年经济学哲学手稿》-马克思著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid2" name="f[2].dxid" value="000016104231"/>
+							<input type="hidden" id="ssid2" name="f[2].ssid" value="14107443"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016104231&d=4F99F73E87821F1233E865FB691B72A3&fenlei=010801010234" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=66696466656C646969685B99AAAD9EAA5B663130353838363035" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016104231&d=4F99F73E87821F1233E865FB691B72A3&fenlei=010801010234" target="_blank">《经典悦读丛书  共产主义的原貌  马克思  1844年经济学哲学手稿》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000016104231&unitid=1247&d=2275D46E9645799ACEC22B9272430693&timestr=1567738446277" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016104231&ssnum=14107443&d=1D9DD795CF28612CB0AEBBD0A0A6D582&fenlei=010801010234" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈培永，周峰&nbsp;&nbsp;</dd><dd>页数:124&nbsp;&nbsp;</dd><dd>出版社:广州：广东人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.07&nbsp;&nbsp;</dd><dd>主题词:《1844年经济学哲学手稿》-马克思著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title3" name="f[3].title" value="马克思主义国际法思想研究"/>
+							<input type="hidden" id="url3" name="f[3].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015848635&d=F6F3F14044414A2BE252AE3AECE200AC&fenlei=010801010632"/>  
+							<input type="hidden" id="memo3" name="f[3].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6668646E6D6E646869655B99AAAD9EAA5B663130353838363035' width=75 border=1></TD><TD><dd>作者:贺富永著&nbsp;&nbsp;</dd><dd>页数:260&nbsp;&nbsp;</dd><dd>出版社:南京：东南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.01&nbsp;&nbsp;</dd><dd>简介:马克思主义国际法思想是一个系统体系，包括马克思恩格斯国际法思想、列宁国际法思想和中国化马克思主义国际法思想。马克思恩格斯运用阶级分析法和经济分析法，揭示了近代国际法产生和发展趋势，他们提出的人权思想、民族平等观念、战争法思想等，至今都还具有重要的理论意义和实践价值。列宁继承和发展了马克思恩格斯的国际法思想，指出帝国主义是现代战争的根源，提出了民族自决原则，认为社会主义国家与资本主义国家可以和平共处等国际法思想。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-国际法-思想评论&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid3" name="f[3].dxid" value="000015848635"/>
+							<input type="hidden" id="ssid3" name="f[3].ssid" value="13989340"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015848635&d=F6F3F14044414A2BE252AE3AECE200AC&fenlei=010801010632" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6668646E6D6E646869655B99AAAD9EAA5B663130353838363035" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015848635&d=F6F3F14044414A2BE252AE3AECE200AC&fenlei=010801010632" target="_blank">《马克思主义国际法思想研究》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015848635&unitid=1247&d=2577B987E0E13EAB2C07A59B6A971D17&timestr=1567738446277" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015848635&ssnum=13989340&d=9BC804FD5F439B3BC4BE623AF9278773&fenlei=010801010632" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:贺富永著&nbsp;&nbsp;</dd><dd>页数:260&nbsp;&nbsp;</dd><dd>出版社:南京：东南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2016.01&nbsp;&nbsp;</dd><dd>简介:马克思主义国际法思想是一个系统体系，包括马克思恩格斯国际法思想、列宁国际法思想和中国化马克思主义国际法思想。马克思恩格斯运用阶级分析法和经济分析法，揭示了近代国际法产生和发展趋势，他们提出的人权思想、民族平等观念、战争法思想等，至今都还具有重要的理论意义和实践价值。列宁继承和发展了马克思恩格斯的国际法思想，指出帝国主义是现代战争的根源，提出了民族自决原则，认为社会主义国家与资本主义国家可以和平共处等国际法思想。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-国际法-思想评论&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title4" name="f[4].title" value="西南地区马克思主义理论学科第三届研究生论坛论文集"/>
+							<input type="hidden" id="url4" name="f[4].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015758450&d=9B572C28C856016804B21A45ED5EFC7C&fenlei=010801"/>  
+							<input type="hidden" id="memo4" name="f[4].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64656D6D646B676B5B99AAAD9EAA5B663130353838363035' width=75 border=1></TD><TD><dd>作者:黄蓉生主编&nbsp;&nbsp;</dd><dd>页数:423&nbsp;&nbsp;</dd><dd>出版社:重庆：西南师范大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2015.11&nbsp;&nbsp;</dd><dd>简介:西南地区普通高校联合举办了马克思主义理论学科第三届研究生论坛，共收到来自西南地区十多所高校研究生的近200篇论文，其中评选出获奖论文62篇，结集为此书而出版。全书所选文章分别围绕“习近平治国理政思想研究”“思想政治教育研究”“社会主义核心价值观研究”“马克思主义哲学与中国化研究”这四大主题展开，比较全面地反映了西南地区高校研究生的马克思主义理论研究的水平及最新成果。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid4" name="f[4].dxid" value="000015758450"/>
+							<input type="hidden" id="ssid4" name="f[4].ssid" value="96088626"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015758450&d=9B572C28C856016804B21A45ED5EFC7C&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64656D6D646B676B5B99AAAD9EAA5B663130353838363035" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015758450&d=9B572C28C856016804B21A45ED5EFC7C&fenlei=010801" target="_blank">《西南地区马克思主义理论学科第三届研究生论坛论文集》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015758450&unitid=1247&d=4709DCB1024AA7C1F40849D61CD4F682&timestr=1567738446278" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015758450&ssnum=96088626&d=3CCAE88FC3ADF0E035DFA2B1E92D5788&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:黄蓉生主编&nbsp;&nbsp;</dd><dd>页数:423&nbsp;&nbsp;</dd><dd>出版社:重庆：西南师范大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2015.11&nbsp;&nbsp;</dd><dd>简介:西南地区普通高校联合举办了马克思主义理论学科第三届研究生论坛，共收到来自西南地区十多所高校研究生的近200篇论文，其中评选出获奖论文62篇，结集为此书而出版。全书所选文章分别围绕“习近平治国理政思想研究”“思想政治教育研究”“社会主义核心价值观研究”“马克思主义哲学与中国化研究”这四大主题展开，比较全面地反映了西南地区高校研究生的马克思主义理论研究的水平及最新成果。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title5" name="f[5].title" value="人是第一个可宝贵的  毛泽东的人口思想和实践研究"/>
+							<input type="hidden" id="url5" name="f[5].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015072554&d=61EEAE40EE0DC484F2352F281A1180DF&fenlei=010804010633"/>  
+							<input type="hidden" id="memo5" name="f[5].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666268646562676C6B5997A8AB9CA859643130353737303633' width=75 border=1></TD><TD><dd>作者:苏富达，刘雪松著&nbsp;&nbsp;</dd><dd>页数:443&nbsp;&nbsp;</dd><dd>出版社:北京：经济日报出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.03&nbsp;&nbsp;</dd><dd>简介:本书以马克思主义唯物史观为指导，除运用分析比较法、归纳演绎法等一般的研究方法外，还运用了大历史观法、历史还原法、考据法、计算机统计法等新方法，为研究毛泽东人口思想的学术专著。本书通过对其人口思想的来源、形成过程、观点、观念、核心、实质、特点，以及历史作用、历史地位和继承与发展等问题进行了全程性、立体性的描绘和全面而系统的分析与研究，力求展示其人口思想在方方面面的本来面貌。并希冀今天的管理者能从以往实践中吸取经验、智慧和教训，以更好地完善人……&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-人口学-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid5" name="f[5].dxid" value="000015072554"/>
+							<input type="hidden" id="ssid5" name="f[5].ssid" value="13512498"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015072554&d=61EEAE40EE0DC484F2352F281A1180DF&fenlei=010804010633" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666268646562676C6B5997A8AB9CA859643130353737303633" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015072554&d=61EEAE40EE0DC484F2352F281A1180DF&fenlei=010804010633" target="_blank">《人是第一个可宝贵的  毛泽东的人口思想和实践研究》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015072554&unitid=1247&d=586FA1AB6CE8C6CE1DA2D44BC76406D8&timestr=1567738446278" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015072554&ssnum=13512498&d=C883FBED9B6D47042D071CAC506783B4&fenlei=010804010633" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:苏富达，刘雪松著&nbsp;&nbsp;</dd><dd>页数:443&nbsp;&nbsp;</dd><dd>出版社:北京：经济日报出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.03&nbsp;&nbsp;</dd><dd>简介:本书以马克思主义唯物史观为指导，除运用分析比较法、归纳演绎法等一般的研究方法外，还运用了大历史观法、历史还原法、考据法、计算机统计法等新方法，为研究毛泽东人口思想的学术专著。本书通过对其人口思想的来源、形成过程、观点、观念、核心、实质、特点，以及历史作用、历史地位和继承与发展等问题进行了全程性、立体性的描绘和全面而系统的分析与研究，力求展示其人口思想在方方面面的本来面貌。并希冀今天的管理者能从以往实践中吸取经验、智慧和教训，以更好地完善人……&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-人口学-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title6" name="f[6].title" value="《毛泽东思想和中国特色社会主义理论体系概论》案例与实训教程  第2版"/>
+							<input type="hidden" id="url6" name="f[6].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015237879&d=7784AF591DDD90A71B12BF967DDF0078&fenlei=010804"/>  
+							<input type="hidden" id="memo6" name="f[6].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666269676C6267696C5997A8AB9CA859643130353737303633' width=75 border=1></TD><TD><dd>作者:陈志强，于淑清主编&nbsp;&nbsp;</dd><dd>页数:345&nbsp;&nbsp;</dd><dd>出版社:上海：上海人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.09&nbsp;&nbsp;</dd><dd>简介:本书是高等教育出版社统编教材《毛泽东思想和中国特色社会主义理论体系概论》的案例和实践教学教材用书。案例教学和实践教学是当前思政课教学改革方向，而《毛泽东思想和中国特色社会主义理论体系概论》课程是理论课时最多、实践课时最多和学分最多的一门思政课。本教材的编写遵循如下原则：案例鲜活生动典型，分析深刻到位；实践紧扣教学，方案具体可行；模拟题库完备，突出重点难点。内容从以下三方面展开：1.收集了几十个案例分别列入十几个专题中，把案例分析贯穿于理论授课和课堂讨论中。2.将实践环节紧密和各章理论结合起来……&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教学参考资料-中国特色社会主义-社会主义建设模式&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid6" name="f[6].dxid" value="000015237879"/>
+							<input type="hidden" id="ssid6" name="f[6].ssid" value="13649469"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015237879&d=7784AF591DDD90A71B12BF967DDF0078&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666269676C6267696C5997A8AB9CA859643130353737303633" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015237879&d=7784AF591DDD90A71B12BF967DDF0078&fenlei=010804" target="_blank">《《毛泽东思想和中国特色社会主义理论体系概论》案例与实训教程  第2版》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015237879&unitid=1247&d=FF750253810F21CEFA7A7043B17EE960&timestr=1567738446278" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015237879&ssnum=13649469&d=9DE29C6C936B5A4BDDDC94239E4E107C&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈志强，于淑清主编&nbsp;&nbsp;</dd><dd>页数:345&nbsp;&nbsp;</dd><dd>出版社:上海：上海人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.09&nbsp;&nbsp;</dd><dd>简介:本书是高等教育出版社统编教材《毛泽东思想和中国特色社会主义理论体系概论》的案例和实践教学教材用书。案例教学和实践教学是当前思政课教学改革方向，而《毛泽东思想和中国特色社会主义理论体系概论》课程是理论课时最多、实践课时最多和学分最多的一门思政课。本教材的编写遵循如下原则：案例鲜活生动典型，分析深刻到位；实践紧扣教学，方案具体可行；模拟题库完备，突出重点难点。内容从以下三方面展开：1.收集了几十个案例分别列入十几个专题中，把案例分析贯穿于理论授课和课堂讨论中。2.将实践环节紧密和各章理论结合起来……&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教学参考资料-中国特色社会主义-社会主义建设模式&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title7" name="f[7].title" value="现代性批判视域中的马克思自然观研究"/>
+							<input type="hidden" id="url7" name="f[7].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015085325&d=6705724C9EC07CEBB57AF8EFF4510779&fenlei=0108010106"/>  
+							<input type="hidden" id="memo7" name="f[7].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656B676F656C6C6B5C9AABAE9FAB5C673435343134303736' width=75 border=1></TD><TD><dd>作者:方锡良著&nbsp;&nbsp;</dd><dd>页数:365&nbsp;&nbsp;</dd><dd>出版社:上海：上海人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.04&nbsp;&nbsp;</dd><dd>简介:本书的研究主旨是深度解读马克思的自然观，发掘其理论潜能及其当代意义。本书通过对西方有关现代性理论文本的解读和对思想史的梳理，尤其是对黑格尔自然观的全面分析，为深入理解马克思的自然观提供了比较深厚的思想背景和理论资源。作者从形而上学批判和资本批判两个角度，对马克思的自然观展开深入的剖析，阐发马克思主义所蕴含的环境思想和生态学观点。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-生态学-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid7" name="f[7].dxid" value="000015085325"/>
+							<input type="hidden" id="ssid7" name="f[7].ssid" value="13519665"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015085325&d=6705724C9EC07CEBB57AF8EFF4510779&fenlei=0108010106" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656B676F656C6C6B5C9AABAE9FAB5C673435343134303736" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015085325&d=6705724C9EC07CEBB57AF8EFF4510779&fenlei=0108010106" target="_blank">《现代性批判视域中的马克思自然观研究》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015085325&unitid=1247&d=E97AF999BBFF5621ACDCA966CEBB586F&timestr=1567738446279" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015085325&ssnum=13519665&d=8A35C3071FC92F11B6361F13FB53CC2C&fenlei=0108010106" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:方锡良著&nbsp;&nbsp;</dd><dd>页数:365&nbsp;&nbsp;</dd><dd>出版社:上海：上海人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.04&nbsp;&nbsp;</dd><dd>简介:本书的研究主旨是深度解读马克思的自然观，发掘其理论潜能及其当代意义。本书通过对西方有关现代性理论文本的解读和对思想史的梳理，尤其是对黑格尔自然观的全面分析，为深入理解马克思的自然观提供了比较深厚的思想背景和理论资源。作者从形而上学批判和资本批判两个角度，对马克思的自然观展开深入的剖析，阐发马克思主义所蕴含的环境思想和生态学观点。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-生态学-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title8" name="f[8].title" value="治国录  毛泽东与1949年后的中国"/>
+							<input type="hidden" id="url8" name="f[8].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000014981486&d=82DBADBD9EF122BA1A4752B884870070&fenlei=01070534"/>  
+							<input type="hidden" id="memo8" name="f[8].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656A6B69656E6A6C5C9AABAE9FAB5C673435343134303736' width=75 border=1></TD><TD><dd>作者:陈冠任编著&nbsp;&nbsp;</dd><dd>页数:4册&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.01&nbsp;&nbsp;</dd><dd>简介:本书约120万字，分八个篇章，叙述了新中国成立后毛泽东治国理政的一些决策和实践，偏重于他在国家建设、经济、外交、文化、科技、教育等方面的一些片段。歌颂了毛泽东对于中国社会主义建设的贡献以及他崇高的革命品质。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid8" name="f[8].dxid" value="000014981486"/>
+							<input type="hidden" id="ssid8" name="f[8].ssid" value="13453846"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000014981486&d=82DBADBD9EF122BA1A4752B884870070&fenlei=01070534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656A6B69656E6A6C5C9AABAE9FAB5C673435343134303736" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000014981486&d=82DBADBD9EF122BA1A4752B884870070&fenlei=01070534" target="_blank">《治国录  毛泽东与1949年后的中国》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000014981486&unitid=1247&d=19F3F3E49E047E440C077C712DB130D2&timestr=1567738446279" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000014981486&ssnum=13453846&d=F298544A168FBF9A1F4C28EEA6BABCA1&fenlei=01070534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈冠任编著&nbsp;&nbsp;</dd><dd>页数:4册&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.01&nbsp;&nbsp;</dd><dd>简介:本书约120万字，分八个篇章，叙述了新中国成立后毛泽东治国理政的一些决策和实践，偏重于他在国家建设、经济、外交、文化、科技、教育等方面的一些片段。歌颂了毛泽东对于中国社会主义建设的贡献以及他崇高的革命品质。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070534">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title9" name="f[9].title" value="毛泽东的读书人生"/>
+							<input type="hidden" id="url9" name="f[9].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000012826578&d=31DE20D5DA6CD3382F8E565FDF6F39FB&fenlei=01070533"/>  
+							<input type="hidden" id="memo9" name="f[9].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656A6A67656D666A5C9AABAE9FAB5C673435343134303736' width=75 border=1></TD><TD><dd>作者:孙宝义，刘春增，邹桂兰编著&nbsp;&nbsp;</dd><dd>页数:456&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.01&nbsp;&nbsp;</dd><dd>简介:本书全面系统地介绍了毛泽东毕生的读书生活。从青少年时代的从师求教，到他的读书环境，读书的内容，读书的方法、经验，读书的刻苦精神，一直到读书的经世致用等方面，都做了翔实的描述。该书突出了毛泽东重视读书学习的思想和观点，引用了不少生动有趣的读书故事，使这本书明显具有新鲜性、知识性、故事性、哲理性、资料性、人才性为一体的特点。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-读书方法&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid9" name="f[9].dxid" value="000012826578"/>
+							<input type="hidden" id="ssid9" name="f[9].ssid" value="13441704"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000012826578&d=31DE20D5DA6CD3382F8E565FDF6F39FB&fenlei=01070533" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6769656A6A67656D666A5C9AABAE9FAB5C673435343134303736" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000012826578&d=31DE20D5DA6CD3382F8E565FDF6F39FB&fenlei=01070533" target="_blank">《毛泽东的读书人生》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000012826578&unitid=1247&d=C2A08C37A3481B23F36077215CE23530&timestr=1567738446279" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000012826578&ssnum=13441704&d=3493AAA2BDFDF85FE905DB060DC2064D&fenlei=01070533" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:孙宝义，刘春增，邹桂兰编著&nbsp;&nbsp;</dd><dd>页数:456&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.01&nbsp;&nbsp;</dd><dd>简介:本书全面系统地介绍了毛泽东毕生的读书生活。从青少年时代的从师求教，到他的读书环境，读书的内容，读书的方法、经验，读书的刻苦精神，一直到读书的经世致用等方面，都做了翔实的描述。该书突出了毛泽东重视读书学习的思想和观点，引用了不少生动有趣的读书故事，使这本书明显具有新鲜性、知识性、故事性、哲理性、资料性、人才性为一体的特点。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-读书方法&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070533">阐述、研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title10" name="f[10].title" value="邓小平南方谈话前后"/>
+							<input type="hidden" id="url10" name="f[10].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015115246&d=155FC8C9D08B09EE341BA05981560FA1&fenlei=010805010534"/>  
+							<input type="hidden" id="memo10" name="f[10].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676D6F6A676C70685E9CADB0A1AD5E693130363030313438' width=75 border=1></TD><TD><dd>作者:陈雷编&nbsp;&nbsp;</dd><dd>页数:156&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.05&nbsp;&nbsp;</dd><dd>简介:本书共分为综述、回忆、人物、访谈、日志、书摘、专论、漫笔共八部分，主要内容包括：邓小平南方谈话开启中国新的发展阶段、确立市场经济体制和加强国家宏观调控回顾等。&nbsp;&nbsp;</dd><dd>主题词:邓小平理论-中国特色社会主义-社会主义建设模式-学习参考资料&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid10" name="f[10].dxid" value="000015115246"/>
+							<input type="hidden" id="ssid10" name="f[10].ssid" value="13572480"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015115246&d=155FC8C9D08B09EE341BA05981560FA1&fenlei=010805010534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676D6F6A676C70685E9CADB0A1AD5E693130363030313438" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015115246&d=155FC8C9D08B09EE341BA05981560FA1&fenlei=010805010534" target="_blank">《邓小平南方谈话前后》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015115246&unitid=1247&d=F6C6454823EF81ACF7E8668DA9149264&timestr=1567738446280" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015115246&ssnum=13572480&d=2BE5B27CCBAD4922A1E1099A71712298&fenlei=010805010534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈雷编&nbsp;&nbsp;</dd><dd>页数:156&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2014.05&nbsp;&nbsp;</dd><dd>简介:本书共分为综述、回忆、人物、访谈、日志、书摘、专论、漫笔共八部分，主要内容包括：邓小平南方谈话开启中国新的发展阶段、确立市场经济体制和加强国家宏观调控回顾等。&nbsp;&nbsp;</dd><dd>主题词:邓小平理论-中国特色社会主义-社会主义建设模式-学习参考资料&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010805">邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080501">邓小平著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title11" name="f[11].title" value="马克思主义基本原理概论练习册"/>
+							<input type="hidden" id="url11" name="f[11].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017243735&d=C633AD33762D66BE63685DD4AF29FFE5&fenlei=010801"/>  
+							<input type="hidden" id="memo11" name="f[11].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B7168676F6E6C5E9CADB0A1AD5E693130363030313438' width=75 border=1></TD><TD><dd>作者:孔国保&nbsp;&nbsp;</dd><dd>页数:262&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:本书共分为七章,其主要内容包括:世界的物质性及其发展规律;认识的本质及其发展规律;人类社会及其发展规律;资本主义的本质及规律;资本主义的发展及其趋势;社会主义的发展及其规律等。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-高等学校-习题集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid11" name="f[11].dxid" value="000017243735"/>
+							<input type="hidden" id="ssid11" name="f[11].ssid" value="14390764"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017243735&d=C633AD33762D66BE63685DD4AF29FFE5&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B7168676F6E6C5E9CADB0A1AD5E693130363030313438" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017243735&d=C633AD33762D66BE63685DD4AF29FFE5&fenlei=010801" target="_blank">《马克思主义基本原理概论练习册》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017243735&ssnum=14390764&d=3A28B6A9CB224676FE260730E52ECA25&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:孔国保&nbsp;&nbsp;</dd><dd>页数:262&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:本书共分为七章,其主要内容包括:世界的物质性及其发展规律;认识的本质及其发展规律;人类社会及其发展规律;资本主义的本质及规律;资本主义的发展及其趋势;社会主义的发展及其规律等。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-高等学校-习题集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title12" name="f[12].title" value="毛泽东思想和中国特色社会主义理论体系概论实践教程"/>
+							<input type="hidden" id="url12" name="f[12].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017243690&d=FD5A99822F7A39E9F1A80E776D06DA70&fenlei=010804"/>  
+							<input type="hidden" id="memo12" name="f[12].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64666E66646C66655B99AAAD9EAA5B663130363033393935' width=75 border=1></TD><TD><dd>作者:杨建平，许立，张继初主编&nbsp;&nbsp;</dd><dd>页数:159&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:毛泽东思想和中国特色社会主义理论体系概论实践教程  本书是毛泽东思想和中国特色社会主义理论体系概论课程的配套使用教材, 根据教材大纲的范围, 选取大量的相关案例, 展示了马克思主义理论在我国的发展历程、实践经历, 有助于学生从感性上认识毛泽东思想的理论价值及中国特色社会主义理论的内涵, 有助于增强学生的理论自信和制度自信。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教材；中国特色社会主义-社会主义建设模式-高等学校-教材&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid12" name="f[12].dxid" value="000017243690"/>
+							<input type="hidden" id="ssid12" name="f[12].ssid" value="96191710"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017243690&d=FD5A99822F7A39E9F1A80E776D06DA70&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64666E66646C66655B99AAAD9EAA5B663130363033393935" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017243690&d=FD5A99822F7A39E9F1A80E776D06DA70&fenlei=010804" target="_blank">《毛泽东思想和中国特色社会主义理论体系概论实践教程》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017243690&ssnum=96191710&d=47D1D7F63DD8F1A4740B1A910F8F9290&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:杨建平，许立，张继初主编&nbsp;&nbsp;</dd><dd>页数:159&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:毛泽东思想和中国特色社会主义理论体系概论实践教程  本书是毛泽东思想和中国特色社会主义理论体系概论课程的配套使用教材, 根据教材大纲的范围, 选取大量的相关案例, 展示了马克思主义理论在我国的发展历程、实践经历, 有助于学生从感性上认识毛泽东思想的理论价值及中国特色社会主义理论的内涵, 有助于增强学生的理论自信和制度自信。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教材；中国特色社会主义-社会主义建设模式-高等学校-教材&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title13" name="f[13].title" value="红色第一家"/>
+							<input type="hidden" id="url13" name="f[13].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017314122&d=4774ED2D98D4767DE622E78E5950A90F&fenlei=01070533"/>  
+							<input type="hidden" id="memo13" name="f[13].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964686E676466656E5B99AAAD9EAA5B663130363033393935' width=75 border=1></TD><TD><dd>作者:杨华方&nbsp;&nbsp;</dd><dd>页数:361&nbsp;&nbsp;</dd><dd>出版社:北京：中国青年出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.05&nbsp;&nbsp;</dd><dd>简介:《红色*家》杨开慧、毛泽建、毛泽覃、毛泽民、毛楚雄、毛岸英六位亲人，在*的鼓励与引导下，前仆后继，无怨无悔无憾地把*好的年华和*宝贵的生命奉献给了国家和民族。作品以鲜为人知的细节，展现了红色*家的优良家风以及在革命与建设进程中的优良党风、国风，讴歌了*和他的亲人们敢为天下先、不畏牺牲的高贵节操，以及不为家人谋私利，舍小家为大家的精神风范。作品具有历史的真实感、厚重感，充满了力量与正义。&nbsp;&nbsp;</dd><dd>主题词:纪实文学-中国-当代&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid13" name="f[13].dxid" value="000017314122"/>
+							<input type="hidden" id="ssid13" name="f[13].ssid" value="14392109"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017314122&d=4774ED2D98D4767DE622E78E5950A90F&fenlei=01070533" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964686E676466656E5B99AAAD9EAA5B663130363033393935" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017314122&d=4774ED2D98D4767DE622E78E5950A90F&fenlei=01070533" target="_blank">《红色第一家》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017314122&ssnum=14392109&d=AD68382BE107A39867624416D5C8F93F&fenlei=01070533" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:杨华方&nbsp;&nbsp;</dd><dd>页数:361&nbsp;&nbsp;</dd><dd>出版社:北京：中国青年出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.05&nbsp;&nbsp;</dd><dd>简介:《红色*家》杨开慧、毛泽建、毛泽覃、毛泽民、毛楚雄、毛岸英六位亲人，在*的鼓励与引导下，前仆后继，无怨无悔无憾地把*好的年华和*宝贵的生命奉献给了国家和民族。作品以鲜为人知的细节，展现了红色*家的优良家风以及在革命与建设进程中的优良党风、国风，讴歌了*和他的亲人们敢为天下先、不畏牺牲的高贵节操，以及不为家人谋私利，舍小家为大家的精神风范。作品具有历史的真实感、厚重感，充满了力量与正义。&nbsp;&nbsp;</dd><dd>主题词:纪实文学-中国-当代&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070533">阐述、研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title14" name="f[14].title" value="“毛泽东思想和中国特色社会主义理论体系概论”实践教程"/>
+							<input type="hidden" id="url14" name="f[14].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017313595&d=07C97F64A775BB9C239A66AF2E89587B&fenlei=010804"/>  
+							<input type="hidden" id="memo14" name="f[14].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64666E66646C666B5B99AAAD9EAA5B663130363033393935' width=75 border=1></TD><TD><dd>作者:刘艳春&nbsp;&nbsp;</dd><dd>页数:232&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.05&nbsp;&nbsp;</dd><dd>简介:本教材内容共包括十二个实践教学专题, 每个专题包括实践项目、典型案例、箴言摘选等内容。具体内容包括: 马克思主义中国化两大理论成果 ; 新民主主义革命理论 ; 社会主义改造理论等。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教材；中国特色社会主义-社会主义建设模式-高等学校-教材&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid14" name="f[14].dxid" value="000017313595"/>
+							<input type="hidden" id="ssid14" name="f[14].ssid" value="96191716"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017313595&d=07C97F64A775BB9C239A66AF2E89587B&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6E6B64666E66646C666B5B99AAAD9EAA5B663130363033393935" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017313595&d=07C97F64A775BB9C239A66AF2E89587B&fenlei=010804" target="_blank">《“毛泽东思想和中国特色社会主义理论体系概论”实践教程》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017313595&ssnum=96191716&d=79076595567A292EBAEEE834E19EE847&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:刘艳春&nbsp;&nbsp;</dd><dd>页数:232&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.05&nbsp;&nbsp;</dd><dd>简介:本教材内容共包括十二个实践教学专题, 每个专题包括实践项目、典型案例、箴言摘选等内容。具体内容包括: 马克思主义中国化两大理论成果 ; 新民主主义革命理论 ; 社会主义改造理论等。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-高等学校-教材；中国特色社会主义-社会主义建设模式-高等学校-教材&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title15" name="f[15].title" value="毛泽东思想和中国特色社会主义理论体系概论练习册"/>
+							<input type="hidden" id="url15" name="f[15].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017244165&d=04AC4D38FF6ED800E870B404D73A1FDF&fenlei=01080431"/>  
+							<input type="hidden" id="memo15" name="f[15].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646762666B6A626369675997A8AB9CA859643130353932343533' width=75 border=1></TD><TD><dd>作者:吴晓云&nbsp;&nbsp;</dd><dd>页数:228&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:本书围绕2015年部编教材的知识要求,按章节顺序进行编写。在编写时,加强基础知识的练习,同时配以适量的论述题和材料分析题,帮助学生提高结合实际分析问题的能力。每章均包括单选题、多选题、判断题、辨析题、简答题、论述题和材料题七个题型。&nbsp;&nbsp;</dd><dd>主题词:中国特色社会主义-社会主义建设模式-高等学校-习题集-毛泽东思想-高等学校-习题集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid15" name="f[15].dxid" value="000017244165"/>
+							<input type="hidden" id="ssid15" name="f[15].ssid" value="14387064"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017244165&d=04AC4D38FF6ED800E870B404D73A1FDF&fenlei=01080431" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646762666B6A626369675997A8AB9CA859643130353932343533" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017244165&d=04AC4D38FF6ED800E870B404D73A1FDF&fenlei=01080431" target="_blank">《毛泽东思想和中国特色社会主义理论体系概论练习册》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017244165&ssnum=14387064&d=519877FA894384057B43B7BB694B5843&fenlei=01080431" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:吴晓云&nbsp;&nbsp;</dd><dd>页数:228&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.03&nbsp;&nbsp;</dd><dd>简介:本书围绕2015年部编教材的知识要求,按章节顺序进行编写。在编写时,加强基础知识的练习,同时配以适量的论述题和材料分析题,帮助学生提高结合实际分析问题的能力。每章均包括单选题、多选题、判断题、辨析题、简答题、论述题和材料题七个题型。&nbsp;&nbsp;</dd><dd>主题词:中国特色社会主义-社会主义建设模式-高等学校-习题集-毛泽东思想-高等学校-习题集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080431">习题、试题及题解</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title16" name="f[16].title" value="马克思主义理论研究  11"/>
+							<input type="hidden" id="url16" name="f[16].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000030370823&d=B9F9831A1982F459B4279180D3B9E710&fenlei=010801"/>  
+							<input type="hidden" id="memo16" name="f[16].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64676267646C626663645997A8AB9CA859643130353932343533' width=75 border=1></TD><TD><dd>作者:陈华兴主编；黄宇，唐晓燕副主编&nbsp;&nbsp;</dd><dd>页数:283&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江工商大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.04&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid16" name="f[16].dxid" value="000030370823"/>
+							<input type="hidden" id="ssid16" name="f[16].ssid" value="14419301"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000030370823&d=B9F9831A1982F459B4279180D3B9E710&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64676267646C626663645997A8AB9CA859643130353932343533" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000030370823&d=B9F9831A1982F459B4279180D3B9E710&fenlei=010801" target="_blank">《马克思主义理论研究  11》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000030370823&ssnum=14419301&d=BE0A5CB37A7DCC6632AAA19DAAD847A2&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈华兴主编；黄宇，唐晓燕副主编&nbsp;&nbsp;</dd><dd>页数:283&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江工商大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2018.04&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title17" name="f[17].title" value="“七个结合”学生视野  浙江大学“概论”课综合改革方案及部分成果"/>
+							<input type="hidden" id="url17" name="f[17].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016653202&d=E9D1E229560BB0D9C795F09DBA6D7FD4&fenlei=010804"/>  
+							<input type="hidden" id="memo17" name="f[17].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C696264676C626969655997A8AB9CA859643130353932343533' width=75 border=1></TD><TD><dd>作者:傅夏仙主编&nbsp;&nbsp;</dd><dd>页数:233&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.04&nbsp;&nbsp;</dd><dd>简介:本书分上、下两篇,上篇为教学改革方案相关资料及具体实施过程的记录;下篇以专题形式收入学生课程论文30篇,每篇均为几人合作完成的小组作业,涉及专题如“为什么要走中国特色社会主义道路”“当前我国的社会矛盾与社会管理创新”“新型城镇化与三农问题”等。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-教学研究-高等学校&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid17" name="f[17].dxid" value="000016653202"/>
+							<input type="hidden" id="ssid17" name="f[17].ssid" value="96149662"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016653202&d=E9D1E229560BB0D9C795F09DBA6D7FD4&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C696264676C626969655997A8AB9CA859643130353932343533" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016653202&d=E9D1E229560BB0D9C795F09DBA6D7FD4&fenlei=010804" target="_blank">《“七个结合”学生视野  浙江大学“概论”课综合改革方案及部分成果》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016653202&ssnum=96149662&d=ED6D58D15D3375A93200740385A62571&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:傅夏仙主编&nbsp;&nbsp;</dd><dd>页数:233&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.04&nbsp;&nbsp;</dd><dd>简介:本书分上、下两篇,上篇为教学改革方案相关资料及具体实施过程的记录;下篇以专题形式收入学生课程论文30篇,每篇均为几人合作完成的小组作业,涉及专题如“为什么要走中国特色社会主义道路”“当前我国的社会矛盾与社会管理创新”“新型城镇化与三农问题”等。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-教学研究-高等学校&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title18" name="f[18].title" value="毛泽东精神"/>
+							<input type="hidden" id="url18" name="f[18].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016639861&d=0E32C5FE4B307ACA8A9DE0FEC383291E&fenlei=010804"/>  
+							<input type="hidden" id="memo18" name="f[18].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6769645694A5A899A556613130353936333030' width=75 border=1></TD><TD><dd>作者:刘振起&nbsp;&nbsp;</dd><dd>页数:331&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.05&nbsp;&nbsp;</dd><dd>简介:刘振起教授以通俗晓畅的文字阐述*的大善精神、平等精神、报国精神、民本精神、斗争精神、合作精神、开放精神、学者精神、修身精神，以全新的视角解读了伟人*。作者潜心研究*多年。*思想、*智慧，这是人们惯常的表达，但是“*精神”的提法，如作者所言，是他的独创。*精神是*内在特质的外在表现，是*这一伟大人物表现出来的无数鲜活行为构成的多维立体的整体。本书内容全是作者对*内在特质的理解，完全出自作者的原创，是作者理解*精神的外部语言表达。书稿论述精辟，句式简短，语言通俗活泼，演讲稿特色鲜明。作者认为*精神是多维度立体的整体，是实现中华民族伟大复兴中国梦的重要思想资源，分析了*思想的历史渊源和基本内涵，认为*思想具有实践性、完整性和指引性三大特征，并从多个角度阐释了*精神与中国传统文化的继承与发展的辩证关系。字里行间蕴含作者对*的深厚感情。*精神指引中国从一个胜利走向另一个胜利，缔造了中国共产党、人民共和国并进行国家经济建设。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid18" name="f[18].dxid" value="000016639861"/>
+							<input type="hidden" id="ssid18" name="f[18].ssid" value="96153794"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016639861&d=0E32C5FE4B307ACA8A9DE0FEC383291E&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6769645694A5A899A556613130353936333030" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016639861&d=0E32C5FE4B307ACA8A9DE0FEC383291E&fenlei=010804" target="_blank">《毛泽东精神》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016639861&ssnum=96153794&d=AC56506264684FF6FB97429F302B2673&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:刘振起&nbsp;&nbsp;</dd><dd>页数:331&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.05&nbsp;&nbsp;</dd><dd>简介:刘振起教授以通俗晓畅的文字阐述*的大善精神、平等精神、报国精神、民本精神、斗争精神、合作精神、开放精神、学者精神、修身精神，以全新的视角解读了伟人*。作者潜心研究*多年。*思想、*智慧，这是人们惯常的表达，但是“*精神”的提法，如作者所言，是他的独创。*精神是*内在特质的外在表现，是*这一伟大人物表现出来的无数鲜活行为构成的多维立体的整体。本书内容全是作者对*内在特质的理解，完全出自作者的原创，是作者理解*精神的外部语言表达。书稿论述精辟，句式简短，语言通俗活泼，演讲稿特色鲜明。作者认为*精神是多维度立体的整体，是实现中华民族伟大复兴中国梦的重要思想资源，分析了*思想的历史渊源和基本内涵，认为*思想具有实践性、完整性和指引性三大特征，并从多个角度阐释了*精神与中国传统文化的继承与发展的辩证关系。字里行间蕴含作者对*的深厚感情。*精神指引中国从一个胜利走向另一个胜利，缔造了中国共产党、人民共和国并进行国家经济建设。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title19" name="f[19].title" value="《实践论》《矛盾论》导读  增订版"/>
+							<input type="hidden" id="url19" name="f[19].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016833946&d=387ECE84862A864D41A619C54BDE772F&fenlei=010804010231"/>  
+							<input type="hidden" id="memo19" name="f[19].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6664675694A5A899A556613130353936333030' width=75 border=1></TD><TD><dd>作者:刘敬东，张玲玲&nbsp;&nbsp;</dd><dd>页数:154&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:《实践论》《矛盾论》是关于马克思主义认识论的代表著作。作者借用马克思主义的认识论观点揭露党内的教条主义和经验主义，是教条主义的主观主义错误。运用总结了中国共产党领导中国革命斗争的实践经验，深刻地阐述了。由中国民主法制出版社、研究出版社联合出版的《〈实践论〉〈矛盾论〉导读》，在附原文的基础上，以经典原著的写作背景、成书过程、结构内容和观点及其历史影响和现实意义为脉络，对《实践论》《矛盾论》进行了细致入微的解读，同时对其中暗含的哲理给予了充分扩展，突出当代价值与时代，利于广大党员干部和青年学生深入理解和掌握马克思主义的原理，也有助于理解现代资本主义社会制度缺陷和社会主义制度的优越性所在。&nbsp;&nbsp;</dd><dd>主题词:《实践论》-毛泽东著作研究；《矛盾论》-毛泽东著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid19" name="f[19].dxid" value="000016833946"/>
+							<input type="hidden" id="ssid19" name="f[19].ssid" value="96153647"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016833946&d=387ECE84862A864D41A619C54BDE772F&fenlei=010804010231" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6664675694A5A899A556613130353936333030" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016833946&d=387ECE84862A864D41A619C54BDE772F&fenlei=010804010231" target="_blank">《《实践论》《矛盾论》导读  增订版》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016833946&ssnum=96153647&d=C51AF8157B61528D8F8AB22DCC4799DB&fenlei=010804010231" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:刘敬东，张玲玲&nbsp;&nbsp;</dd><dd>页数:154&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:《实践论》《矛盾论》是关于马克思主义认识论的代表著作。作者借用马克思主义的认识论观点揭露党内的教条主义和经验主义，是教条主义的主观主义错误。运用总结了中国共产党领导中国革命斗争的实践经验，深刻地阐述了。由中国民主法制出版社、研究出版社联合出版的《〈实践论〉〈矛盾论〉导读》，在附原文的基础上，以经典原著的写作背景、成书过程、结构内容和观点及其历史影响和现实意义为脉络，对《实践论》《矛盾论》进行了细致入微的解读，同时对其中暗含的哲理给予了充分扩展，突出当代价值与时代，利于广大党员干部和青年学生深入理解和掌握马克思主义的原理，也有助于理解现代资本主义社会制度缺陷和社会主义制度的优越性所在。&nbsp;&nbsp;</dd><dd>主题词:《实践论》-毛泽东著作研究；《矛盾论》-毛泽东著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title20" name="f[20].title" value="马克思自我实现思想研究"/>
+							<input type="hidden" id="url20" name="f[20].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000030353649&d=205854ABE24A058D09FD2D2C84D6E873&fenlei=010801"/>  
+							<input type="hidden" id="memo20" name="f[20].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6168605F6168605694A5A899A556613130353936333030' width=75 border=1></TD><TD><dd>作者:高斯扬著&nbsp;&nbsp;</dd><dd>页数:301&nbsp;&nbsp;</dd><dd>出版社:北京：中国书籍出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.06&nbsp;&nbsp;</dd><dd>简介:全书通过分析马克思关于自我实现的具体结构，梳理了马克思从现实个人生存事实出发的“自我”辩证逻辑建构，并通过结合后马克思时代西方学者对于马克思关于自我实现思想的多样化发展路线，展现马克思关于自我实现思想的内在结构和生命活力。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid20" name="f[20].dxid" value="000030353649"/>
+							<input type="hidden" id="ssid20" name="f[20].ssid" value="96180180"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000030353649&d=205854ABE24A058D09FD2D2C84D6E873&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6168605F6168605694A5A899A556613130353936333030" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000030353649&d=205854ABE24A058D09FD2D2C84D6E873&fenlei=010801" target="_blank">《马克思自我实现思想研究》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000030353649&ssnum=96180180&d=9298B8E222C70C8B5A3399083E713954&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:高斯扬著&nbsp;&nbsp;</dd><dd>页数:301&nbsp;&nbsp;</dd><dd>出版社:北京：中国书籍出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.06&nbsp;&nbsp;</dd><dd>简介:全书通过分析马克思关于自我实现的具体结构，梳理了马克思从现实个人生存事实出发的“自我”辩证逻辑建构，并通过结合后马克思时代西方学者对于马克思关于自我实现思想的多样化发展路线，展现马克思关于自我实现思想的内在结构和生命活力。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title21" name="f[21].title" value="毛泽东的苏联观"/>
+							<input type="hidden" id="url21" name="f[21].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016976494&d=4FE019D43EC0A995A459FD6AC41126A6&fenlei=010804010633"/>  
+							<input type="hidden" id="memo21" name="f[21].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B6F6C676B6A6A5E9CADB0A1AD5E693133353532383538' width=75 border=1></TD><TD><dd>作者:周树辉&nbsp;&nbsp;</dd><dd>页数:231&nbsp;&nbsp;</dd><dd>出版社:长沙：湖南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.11&nbsp;&nbsp;</dd><dd>简介:中苏关系是20世纪世界上*重要的大国关系之一，也是中国*重要*复杂*敏感*多变的外交关系。本书在极其重要、复杂而漫长的中苏关系的发展变化中，选取*这一极具代表性的个体，通过*一生对苏联的认识，由小及大，由微观而宏观，从而透视不同时期中国共产党人、新中国成立后中国政府和中国人民的苏联观及对苏政策。同时从*不同时期的苏联观及由此而来的对苏政策所产生的实际效果中总结经验和教训，从而为我们今天正确处理中俄关系，及其与中国密切相关的大国关系、周边国家关系和社会主义国家间的关系提供深刻的启示和借鉴。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-中苏关系-国际关系理论-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid21" name="f[21].dxid" value="000016976494"/>
+							<input type="hidden" id="ssid21" name="f[21].ssid" value="14374322"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016976494&d=4FE019D43EC0A995A459FD6AC41126A6&fenlei=010804010633" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B6F6C676B6A6A5E9CADB0A1AD5E693133353532383538" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016976494&d=4FE019D43EC0A995A459FD6AC41126A6&fenlei=010804010633" target="_blank">《毛泽东的苏联观》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016976494&ssnum=14374322&d=BD5251E1DFECB3381059C209949C4D42&fenlei=010804010633" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:周树辉&nbsp;&nbsp;</dd><dd>页数:231&nbsp;&nbsp;</dd><dd>出版社:长沙：湖南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.11&nbsp;&nbsp;</dd><dd>简介:中苏关系是20世纪世界上*重要的大国关系之一，也是中国*重要*复杂*敏感*多变的外交关系。本书在极其重要、复杂而漫长的中苏关系的发展变化中，选取*这一极具代表性的个体，通过*一生对苏联的认识，由小及大，由微观而宏观，从而透视不同时期中国共产党人、新中国成立后中国政府和中国人民的苏联观及对苏政策。同时从*不同时期的苏联观及由此而来的对苏政策所产生的实际效果中总结经验和教训，从而为我们今天正确处理中俄关系，及其与中国密切相关的大国关系、周边国家关系和社会主义国家间的关系提供深刻的启示和借鉴。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-中苏关系-国际关系理论-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title22" name="f[22].title" value="博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《家庭、私有制和国家的起源》导读"/>
+							<input type="hidden" id="url22" name="f[22].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016535207&d=9D37951A2820196C3A35EE7D8BEC6DB5&fenlei=010801010231"/>  
+							<input type="hidden" id="memo22" name="f[22].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676A6A6867706D705E9CADB0A1AD5E693133353532383538' width=75 border=1></TD><TD><dd>作者:荣鑫，刘志洪著；艾四林编&nbsp;&nbsp;</dd><dd>页数:150&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<家庭、私有制和国家的起源>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《家庭、私有制和国家的起源》-恩格斯著作-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid22" name="f[22].dxid" value="000016535207"/>
+							<input type="hidden" id="ssid22" name="f[22].ssid" value="14220858"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016535207&d=9D37951A2820196C3A35EE7D8BEC6DB5&fenlei=010801010231" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676A6A6867706D705E9CADB0A1AD5E693133353532383538" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016535207&d=9D37951A2820196C3A35EE7D8BEC6DB5&fenlei=010801010231" target="_blank">《博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《家庭、私有制和国家的起源》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016535207&ssnum=14220858&d=275E0073A1D5D6BDA4A5D79E9C6A5BB5&fenlei=010801010231" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:荣鑫，刘志洪著；艾四林编&nbsp;&nbsp;</dd><dd>页数:150&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<家庭、私有制和国家的起源>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《家庭、私有制和国家的起源》-恩格斯著作-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title23" name="f[23].title" value="博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《路德维希·费尔巴哈和德国古典哲学的终结》导读"/>
+							<input type="hidden" id="url23" name="f[23].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016535208&d=F9DB34297F194D7A600525E5A9769E88&fenlei=010801010231"/>  
+							<input type="hidden" id="memo23" name="f[23].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964676765646D68695B99AAAD9EAA5B663130363139333835' width=75 border=1></TD><TD><dd>作者:周强，孙厚权著；艾四林编&nbsp;&nbsp;</dd><dd>页数:130&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<路德维希·费尔巴哈和德国古典哲学的终结>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《路德维希·费尔巴哈和德国古典哲学的终结》-恩格斯著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid23" name="f[23].dxid" value="000016535208"/>
+							<input type="hidden" id="ssid23" name="f[23].ssid" value="14220834"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016535208&d=F9DB34297F194D7A600525E5A9769E88&fenlei=010801010231" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964676765646D68695B99AAAD9EAA5B663130363139333835" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016535208&d=F9DB34297F194D7A600525E5A9769E88&fenlei=010801010231" target="_blank">《博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《路德维希·费尔巴哈和德国古典哲学的终结》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016535208&ssnum=14220834&d=5C1BA6DAC20BCEA1E7C820653E1F94FC&fenlei=010801010231" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:周强，孙厚权著；艾四林编&nbsp;&nbsp;</dd><dd>页数:130&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<路德维希·费尔巴哈和德国古典哲学的终结>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《路德维希·费尔巴哈和德国古典哲学的终结》-恩格斯著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title24" name="f[24].title" value="马克思主义经典著作研究读本  马克思《博士论文》研究读本"/>
+							<input type="hidden" id="url24" name="f[24].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016525254&d=83E01898D3B88EBBEE33D0C30A74D9AF&fenlei=010801010231"/>  
+							<input type="hidden" id="memo24" name="f[24].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964666E68646968695B99AAAD9EAA5B663130363139333835' width=75 border=1></TD><TD><dd>作者:张广照编著&nbsp;&nbsp;</dd><dd>页数:421&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.03&nbsp;&nbsp;</dd><dd>简介:本书是国家出版基金项目《马克思主义经典著作研究读本》之一。本书对马克思的博士论文产生的历史背景和传播等作了必要的介绍，对国内外学者的研究作了梳理，并指出伊壁鸠鲁能动的唯物主义是马克思哲学的来源、本质和核心，这表现于其中学毕业作文，奠基于博士论文，贯穿于整个哲学和全部学说。&nbsp;&nbsp;</dd><dd>主题词:《博士论文》-马克思著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid24" name="f[24].dxid" value="000016525254"/>
+							<input type="hidden" id="ssid24" name="f[24].ssid" value="14193434"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016525254&d=83E01898D3B88EBBEE33D0C30A74D9AF&fenlei=010801010231" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964666E68646968695B99AAAD9EAA5B663130363139333835" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016525254&d=83E01898D3B88EBBEE33D0C30A74D9AF&fenlei=010801010231" target="_blank">《马克思主义经典著作研究读本  马克思《博士论文》研究读本》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016525254&ssnum=14193434&d=2356165DFC0B26DE92CD8CF1516B79EF&fenlei=010801010231" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:张广照编著&nbsp;&nbsp;</dd><dd>页数:421&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.03&nbsp;&nbsp;</dd><dd>简介:本书是国家出版基金项目《马克思主义经典著作研究读本》之一。本书对马克思的博士论文产生的历史背景和传播等作了必要的介绍，对国内外学者的研究作了梳理，并指出伊壁鸠鲁能动的唯物主义是马克思哲学的来源、本质和核心，这表现于其中学毕业作文，奠基于博士论文，贯穿于整个哲学和全部学说。&nbsp;&nbsp;</dd><dd>主题词:《博士论文》-马克思著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title25" name="f[25].title" value="马克思主义基本原理概论"/>
+							<input type="hidden" id="url25" name="f[25].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000030367031&d=5D370279600C5B90AB4313A69230F841&fenlei=010801"/>  
+							<input type="hidden" id="memo25" name="f[25].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C6962646B686269666B5997A8AB9CA859643130363037383433' width=75 border=1></TD><TD><dd>作者:施乐，王力主编&nbsp;&nbsp;</dd><dd>页数:204&nbsp;&nbsp;</dd><dd>出版社:成都：电子科技大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.08&nbsp;&nbsp;</dd><dd>简介:《马克思主义基本原理概论》是高校思想政治理论课的四门主干课程之一，是马克思主义理论体系中最基本、最核心的内容，是对马克思主义的立场、观点和方法的集中概括，其理论含量大，知识点多。为了便于学生全面、准确、系统地把握课程特点和主要内容，作者在内容编排上采用了循序渐进，由易到难，由浅到深的手法，既有广度又有深度，有很强的针对性；适合自学，有利于学习掌握、了解新知识、新信息，有利于学习者增强创新意识、培养实践能力、形成息学能力，也有利于帮助学生更好的了解马克思主义的基本规律及其在现实生活中的实际应用。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-高等学校-教材-&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid25" name="f[25].dxid" value="000030367031"/>
+							<input type="hidden" id="ssid25" name="f[25].ssid" value="96185638"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000030367031&d=5D370279600C5B90AB4313A69230F841&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C6962646B686269666B5997A8AB9CA859643130363037383433" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000030367031&d=5D370279600C5B90AB4313A69230F841&fenlei=010801" target="_blank">《马克思主义基本原理概论》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000030367031&ssnum=96185638&d=1061F93E101FEEC07381FEB73512D9AF&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:施乐，王力主编&nbsp;&nbsp;</dd><dd>页数:204&nbsp;&nbsp;</dd><dd>出版社:成都：电子科技大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.08&nbsp;&nbsp;</dd><dd>简介:《马克思主义基本原理概论》是高校思想政治理论课的四门主干课程之一，是马克思主义理论体系中最基本、最核心的内容，是对马克思主义的立场、观点和方法的集中概括，其理论含量大，知识点多。为了便于学生全面、准确、系统地把握课程特点和主要内容，作者在内容编排上采用了循序渐进，由易到难，由浅到深的手法，既有广度又有深度，有很强的针对性；适合自学，有利于学习掌握、了解新知识、新信息，有利于学习者增强创新意识、培养实践能力、形成息学能力，也有利于帮助学生更好的了解马克思主义的基本规律及其在现实生活中的实际应用。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-高等学校-教材-&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title26" name="f[26].title" value="清廉领袖毛泽东"/>
+							<input type="hidden" id="url26" name="f[26].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000012810253&d=B9E395D2F638D6E45F8B9DDC4699940B&fenlei=01070534"/>  
+							<input type="hidden" id="memo26" name="f[26].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666267686362686C6A5997A8AB9CA859643130363037383433' width=75 border=1></TD><TD><dd>作者:刘金田主编&nbsp;&nbsp;</dd><dd>页数:246&nbsp;&nbsp;</dd><dd>出版社:南京：江苏人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.10&nbsp;&nbsp;</dd><dd>简介:陕甘宁边区突遭雷击。一农民说老天爷不睁眼，咋不打死毛泽东?保卫部门当作反革命事件追查。毛泽东制止。他深思一个农民为什么会说出这样的话，它反映我们工作中到底存在什么问题?毛泽东的拖鞋鞋面突然断裂，工作人员送到鞋店。修鞋师傅非常惊呀“这么破了还补什么?”任凭工作人员怎么恳求他也不肯补。毛泽东与身边工作人员“约法三章”“凡首长需要的一切东西，托当地办的，必须货款两清，对方不要钱，我们就不收东西。”毛泽东到武汉，住在东湖招待所。地方上同志不知道他的睡眠习惯。就弄了一张弹簧床。第二天卫士走进卧室，吓了一大跳。原来，主席睡在地板上!&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid26" name="f[26].dxid" value="000012810253"/>
+							<input type="hidden" id="ssid26" name="f[26].ssid" value="13450597"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000012810253&d=B9E395D2F638D6E45F8B9DDC4699940B&fenlei=01070534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666267686362686C6A5997A8AB9CA859643130363037383433" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000012810253&d=B9E395D2F638D6E45F8B9DDC4699940B&fenlei=01070534" target="_blank">《清廉领袖毛泽东》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000012810253&unitid=1247&d=4BF6D84321D229BD49F08548EEB653FF&timestr=1567738446287" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000012810253&ssnum=13450597&d=0A3C1107DE428E7EBD74425D6C60EFEA&fenlei=01070534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:刘金田主编&nbsp;&nbsp;</dd><dd>页数:246&nbsp;&nbsp;</dd><dd>出版社:南京：江苏人民出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.10&nbsp;&nbsp;</dd><dd>简介:陕甘宁边区突遭雷击。一农民说老天爷不睁眼，咋不打死毛泽东?保卫部门当作反革命事件追查。毛泽东制止。他深思一个农民为什么会说出这样的话，它反映我们工作中到底存在什么问题?毛泽东的拖鞋鞋面突然断裂，工作人员送到鞋店。修鞋师傅非常惊呀“这么破了还补什么?”任凭工作人员怎么恳求他也不肯补。毛泽东与身边工作人员“约法三章”“凡首长需要的一切东西，托当地办的，必须货款两清，对方不要钱，我们就不收东西。”毛泽东到武汉，住在东湖招待所。地方上同志不知道他的睡眠习惯。就弄了一张弹簧床。第二天卫士走进卧室，吓了一大跳。原来，主席睡在地板上!&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070534">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title27" name="f[27].title" value="毛泽东思想和中国特色社会主义理论体系概论案例教学指导"/>
+							<input type="hidden" id="url27" name="f[27].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016886440&d=A5EA0628C19CB2C1ACA03F00CFB26BB7&fenlei=010804"/>  
+							<input type="hidden" id="memo27" name="f[27].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61645F6266655F6264695694A5A899A556613130363131363930' width=75 border=1></TD><TD><dd>作者:彭艳著&nbsp;&nbsp;</dd><dd>页数:147&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:《*思想和中国特色社会主义理论体系概论案例教学指导/高等职业教育“十三五”规划教材》主要内容共十章，每节内容按照“学习重点、典型案例、案例思考、案例点评、延伸案例、学习建议”六个学习栏目编排。“学习重点”栏目明确本节课的学习目标、学习的重点和难点；“典型案例”是结合教材内容，选取和高职学生关系密切，具有新颖性和典型性的案例，并提出问题；“案例思考”栏目是学生运用所学的知识分析解决案例中反映的问题；“案例点评”栏目是将学生对案例的分析结论进行汇总和总结，强化学生对相关知识的理解、把握和运用的能力；“延伸案例”栏目是选取与教材知识点有关的其他案例，以此加强学生对知识的理解，培养学生自己解决实际问题的能力；“学习建议”是根据学生在分析问题中存在的问题，给出正确的建议，帮助学生加强对知识的理解。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想－高等学校－教学参考资料；中国特色社会主义－社会主义建设模式－高等学校－教学参考资料&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid27" name="f[27].dxid" value="000016886440"/>
+							<input type="hidden" id="ssid27" name="f[27].ssid" value="14265249"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016886440&d=A5EA0628C19CB2C1ACA03F00CFB26BB7&fenlei=010804" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61645F6266655F6264695694A5A899A556613130363131363930" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016886440&d=A5EA0628C19CB2C1ACA03F00CFB26BB7&fenlei=010804" target="_blank">《毛泽东思想和中国特色社会主义理论体系概论案例教学指导》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016886440&ssnum=14265249&d=36F2084A1B4FC7FD3FB555BFF21F9D81&fenlei=010804" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:彭艳著&nbsp;&nbsp;</dd><dd>页数:147&nbsp;&nbsp;</dd><dd>出版社:北京：北京理工大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:《*思想和中国特色社会主义理论体系概论案例教学指导/高等职业教育“十三五”规划教材》主要内容共十章，每节内容按照“学习重点、典型案例、案例思考、案例点评、延伸案例、学习建议”六个学习栏目编排。“学习重点”栏目明确本节课的学习目标、学习的重点和难点；“典型案例”是结合教材内容，选取和高职学生关系密切，具有新颖性和典型性的案例，并提出问题；“案例思考”栏目是学生运用所学的知识分析解决案例中反映的问题；“案例点评”栏目是将学生对案例的分析结论进行汇总和总结，强化学生对相关知识的理解、把握和运用的能力；“延伸案例”栏目是选取与教材知识点有关的其他案例，以此加强学生对知识的理解，培养学生自己解决实际问题的能力；“学习建议”是根据学生在分析问题中存在的问题，给出正确的建议，帮助学生加强对知识的理解。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想－高等学校－教学参考资料；中国特色社会主义－社会主义建设模式－高等学校－教学参考资料&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title28" name="f[28].title" value="马克思《詹姆斯·穆勒一书摘要》研究读本"/>
+							<input type="hidden" id="url28" name="f[28].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000013736466&d=52A5707503DD64B8C4C432933875DE3F&fenlei=010801010634"/>  
+							<input type="hidden" id="memo28" name="f[28].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676C6D70677168705E9CADB0A1AD5E693130353037383038' width=75 border=1></TD><TD><dd>作者:吕梁山著&nbsp;&nbsp;</dd><dd>页数:307&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>简介:本书作为综合论述国内外学者对《穆勒评注》在各方面研究的专门读本，通过对马克思《穆勒评注》进行深入的文本解读，力图揭示其在早期马克思思想脉络发展的重要地位，特别是对揭示马克思如何摆脱人本主义的异化劳动逻辑，从孤立的人转向社会关系问题的研究，具有重要的学术价值和理论意义。通过分析马克思在《穆勒评注》中对交往异化理论的论述，把这种交往异化理论扩展到对社会经济生活的分析，实现了哲学与经济学相结合的跨学科研究。这对于研究中国目前的经济问题、科学地批判与借鉴当代西方经济学研究的成果，丰富和发展中国化的马克思主义理论研究，从而全面展现马克思《穆勒评注》中的重要思想价值和历史贡献，具有现实的指导意义和重要的应用价值。&nbsp;&nbsp;</dd><dd>主题词:政治经济学-马克思著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid28" name="f[28].dxid" value="000013736466"/>
+							<input type="hidden" id="ssid28" name="f[28].ssid" value="13458908"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000013736466&d=52A5707503DD64B8C4C432933875DE3F&fenlei=010801010634" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676C6D70677168705E9CADB0A1AD5E693130353037383038" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000013736466&d=52A5707503DD64B8C4C432933875DE3F&fenlei=010801010634" target="_blank">《马克思《詹姆斯·穆勒一书摘要》研究读本》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000013736466&unitid=1247&d=CEF9EAB858F6D2F15937B4CECD249C20&timestr=1567738446288" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000013736466&ssnum=13458908&d=30F3DD000105E7AF9E896C27144DAFA8&fenlei=010801010634" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:吕梁山著&nbsp;&nbsp;</dd><dd>页数:307&nbsp;&nbsp;</dd><dd>出版社:北京：中央编译出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>简介:本书作为综合论述国内外学者对《穆勒评注》在各方面研究的专门读本，通过对马克思《穆勒评注》进行深入的文本解读，力图揭示其在早期马克思思想脉络发展的重要地位，特别是对揭示马克思如何摆脱人本主义的异化劳动逻辑，从孤立的人转向社会关系问题的研究，具有重要的学术价值和理论意义。通过分析马克思在《穆勒评注》中对交往异化理论的论述，把这种交往异化理论扩展到对社会经济生活的分析，实现了哲学与经济学相结合的跨学科研究。这对于研究中国目前的经济问题、科学地批判与借鉴当代西方经济学研究的成果，丰富和发展中国化的马克思主义理论研究，从而全面展现马克思《穆勒评注》中的重要思想价值和历史贡献，具有现实的指导意义和重要的应用价值。&nbsp;&nbsp;</dd><dd>主题词:政治经济学-马克思著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title29" name="f[29].title" value="重大事件中的毛泽东"/>
+							<input type="hidden" id="url29" name="f[29].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011647621&d=8E50E174F5383F2B77E57F30CAB27B31&fenlei=01070534"/>  
+							<input type="hidden" id="memo29" name="f[29].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B67696B69676B68685E9CADB0A1AD5E693130353037383038' width=75 border=1></TD><TD><dd>作者:赵维著&nbsp;&nbsp;</dd><dd>页数:296&nbsp;&nbsp;</dd><dd>出版社:沈阳：辽宁教育出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.01&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893～1976）-生平事迹&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid29" name="f[29].dxid" value="000011647621"/>
+							<input type="hidden" id="ssid29" name="f[29].ssid" value="13131300"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011647621&d=8E50E174F5383F2B77E57F30CAB27B31&fenlei=01070534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B67696B69676B68685E9CADB0A1AD5E693130353037383038" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011647621&d=8E50E174F5383F2B77E57F30CAB27B31&fenlei=01070534" target="_blank">《重大事件中的毛泽东》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011647621&unitid=1247&d=40E9A5FF28A846DDADB16A5039047208&timestr=1567738446288" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011647621&ssnum=13131300&d=9F48DDCE0F2196143D38E694506229F6&fenlei=01070534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:赵维著&nbsp;&nbsp;</dd><dd>页数:296&nbsp;&nbsp;</dd><dd>出版社:沈阳：辽宁教育出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.01&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893～1976）-生平事迹&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070534">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title30" name="f[30].title" value="毛泽东诗词精读  增订版"/>
+							<input type="hidden" id="url30" name="f[30].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011733321&d=59DDDE09FF2926AB9421733EDB9C0302&fenlei=0108040104"/>  
+							<input type="hidden" id="memo30" name="f[30].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676A6A6867706A715E9CADB0A1AD5E693130353037383038' width=75 border=1></TD><TD><dd>作者:丁三省编著&nbsp;&nbsp;</dd><dd>页数:405&nbsp;&nbsp;</dd><dd>出版社:北京：文化艺术出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.01&nbsp;&nbsp;</dd><dd>简介:本书对毛泽东诗词进行逐一注释、讲解，对每首诗词的写作背景、内容作了详细解说。&nbsp;&nbsp;</dd><dd>主题词:毛主席诗词研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid30" name="f[30].dxid" value="000011733321"/>
+							<input type="hidden" id="ssid30" name="f[30].ssid" value="13220829"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011733321&d=59DDDE09FF2926AB9421733EDB9C0302&fenlei=0108040104" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696B676A6A6867706A715E9CADB0A1AD5E693130353037383038" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011733321&d=59DDDE09FF2926AB9421733EDB9C0302&fenlei=0108040104" target="_blank">《毛泽东诗词精读  增订版》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011733321&unitid=1247&d=959F98A123E94404B62BC45028BE197B&timestr=1567738446288" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011733321&ssnum=13220829&d=169F0C1F96B4D5B3D64F044CECA11627&fenlei=0108040104" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:丁三省编著&nbsp;&nbsp;</dd><dd>页数:405&nbsp;&nbsp;</dd><dd>出版社:北京：文化艺术出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.01&nbsp;&nbsp;</dd><dd>简介:本书对毛泽东诗词进行逐一注释、讲解，对每首诗词的写作背景、内容作了详细解说。&nbsp;&nbsp;</dd><dd>主题词:毛主席诗词研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title31" name="f[31].title" value="马克思科技创新思想研究"/>
+							<input type="hidden" id="url31" name="f[31].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000017032405&d=E0E04BE15DBA2526657130721CE11EC2&fenlei=010801010634"/>  
+							<input type="hidden" id="memo31" name="f[31].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=65686367696D63696A6C5A98A9AC9DA95A653232313937333334' width=75 border=1></TD><TD><dd>作者:雷石山著&nbsp;&nbsp;</dd><dd>页数:200&nbsp;&nbsp;</dd><dd>出版社:北京：中国政法大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.10&nbsp;&nbsp;</dd><dd>简介:马克思恩格斯科技创新思想是马克思主义的重要组成部分，在马克思主义理论体系中占有重要地位。马克思恩格斯科技创新思想形成经历了萌芽阶段、形成阶段和成熟阶段。马克思恩格斯科技创新思想很好丰富:揭示了科技创新的内涵和基本特征;从推动生产力发展、引起产业结构变化、对资本家和工人的影响和资源充分利用等方面阐述了科技创新的作用;从社会分工、社会制度、生产实践和教育发展四个方面揭示了影响科技创新的重要因素。马克思恩格斯科技创新思想给我们提供重要启示:必须高度重视科技创新在国家强盛和民族复兴中的重要地位。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-技术革新-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid31" name="f[31].dxid" value="000017032405"/>
+							<input type="hidden" id="ssid31" name="f[31].ssid" value="14359568"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000017032405&d=E0E04BE15DBA2526657130721CE11EC2&fenlei=010801010634" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=65686367696D63696A6C5A98A9AC9DA95A653232313937333334" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000017032405&d=E0E04BE15DBA2526657130721CE11EC2&fenlei=010801010634" target="_blank">《马克思科技创新思想研究》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000017032405&ssnum=14359568&d=F848578652BB055DAA7C5C0FD4F90BA8&fenlei=010801010634" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:雷石山著&nbsp;&nbsp;</dd><dd>页数:200&nbsp;&nbsp;</dd><dd>出版社:北京：中国政法大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.10&nbsp;&nbsp;</dd><dd>简介:马克思恩格斯科技创新思想是马克思主义的重要组成部分，在马克思主义理论体系中占有重要地位。马克思恩格斯科技创新思想形成经历了萌芽阶段、形成阶段和成熟阶段。马克思恩格斯科技创新思想很好丰富:揭示了科技创新的内涵和基本特征;从推动生产力发展、引起产业结构变化、对资本家和工人的影响和资源充分利用等方面阐述了科技创新的作用;从社会分工、社会制度、生产实践和教育发展四个方面揭示了影响科技创新的重要因素。马克思恩格斯科技创新思想给我们提供重要启示:必须高度重视科技创新在国家强盛和民族复兴中的重要地位。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-技术革新-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title32" name="f[32].title" value="解读《国家与革命》"/>
+							<input type="hidden" id="url32" name="f[32].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015692450&d=7F1C341F00C803C31D43C9F397FEE482&fenlei=010802010233"/>  
+							<input type="hidden" id="memo32" name="f[32].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6D6A6364696A636C68675A98A9AC9DA95A653232313937333334' width=75 border=1></TD><TD><dd>作者:侯治水著&nbsp;&nbsp;</dd><dd>页数:186&nbsp;&nbsp;</dd><dd>出版社:长春：吉林出版集团有限责任公司&nbsp;&nbsp;</dd><dd>出版日期:2013.09&nbsp;&nbsp;</dd><dd>简介:《国家与革命》是列宁写的系统阐述马克思主义国家学说的名著。全书共六章，分为：列宁独创地发挥了马克思主义国家学说的实质，充分论证了无产阶级专政的必要性；揭示了无产阶级专政与社会主义新型民主的一致性；从理论上探讨了社会主义新型民主的发展规律，注意到无产阶级专?&nbsp;&nbsp;</dd><dd>主题词:《国家与革命》-列宁著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid32" name="f[32].dxid" value="000015692450"/>
+							<input type="hidden" id="ssid32" name="f[32].ssid" value="96056843"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015692450&d=7F1C341F00C803C31D43C9F397FEE482&fenlei=010802010233" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6D6A6364696A636C68675A98A9AC9DA95A653232313937333334" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015692450&d=7F1C341F00C803C31D43C9F397FEE482&fenlei=010802010233" target="_blank">《解读《国家与革命》》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015692450&unitid=1247&d=A47FABCD0D11FF1587EB62A984BC2583&timestr=1567738446289" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015692450&ssnum=96056843&d=204ED53EA75FD32AE721AFAFF0A17506&fenlei=010802010233" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:侯治水著&nbsp;&nbsp;</dd><dd>页数:186&nbsp;&nbsp;</dd><dd>出版社:长春：吉林出版集团有限责任公司&nbsp;&nbsp;</dd><dd>出版日期:2013.09&nbsp;&nbsp;</dd><dd>简介:《国家与革命》是列宁写的系统阐述马克思主义国家学说的名著。全书共六章，分为：列宁独创地发挥了马克思主义国家学说的实质，充分论证了无产阶级专政的必要性；揭示了无产阶级专政与社会主义新型民主的一致性；从理论上探讨了社会主义新型民主的发展规律，注意到无产阶级专?&nbsp;&nbsp;</dd><dd>主题词:《国家与革命》-列宁著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010802">列宁主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080201">列宁著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title33" name="f[33].title" value="邓小平在重大历史关头  纪念邓小平南方谈话20周年"/>
+							<input type="hidden" id="url33" name="f[33].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000008271902&d=F555E32D9A87819B4C280786A491D737&fenlei=01070632"/>  
+							<input type="hidden" id="memo33" name="f[33].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=656763666A69636A6C6A5A98A9AC9DA95A653232313937333334' width=75 border=1></TD><TD><dd>作者:宫力，周敬青，张曙著&nbsp;&nbsp;</dd><dd>页数:336&nbsp;&nbsp;</dd><dd>出版社:北京：九州出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.04&nbsp;&nbsp;</dd><dd>简介:本书择取历史转折关头发生的若干重大事件，对邓小平的奋斗足迹和历史贡献进行了较为具体、细致、客观的描述，展示了邓小平的人格魅力和为祖国富强，人民幸福而勇往直前、奋斗不已的革命精神和高尚情怀，具有很强的可读性和感染力。本书由中共中央党校出版社于2000年1月出版，我社在此版基础上经过认真审读，再次出版。&nbsp;&nbsp;</dd><dd>主题词:邓小平（1904-1997）-生平事迹&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid33" name="f[33].dxid" value="000008271902"/>
+							<input type="hidden" id="ssid33" name="f[33].ssid" value="13265686"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000008271902&d=F555E32D9A87819B4C280786A491D737&fenlei=01070632" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=656763666A69636A6C6A5A98A9AC9DA95A653232313937333334" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000008271902&d=F555E32D9A87819B4C280786A491D737&fenlei=01070632" target="_blank">《邓小平在重大历史关头  纪念邓小平南方谈话20周年》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000008271902&unitid=1247&d=D28AF4FD7279EFB157BCAB9970ACC9B4&timestr=1567738446289" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000008271902&ssnum=13265686&d=068EEA7ACBD9A30A0154B37E0EFC6895&fenlei=01070632" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:宫力，周敬青，张曙著&nbsp;&nbsp;</dd><dd>页数:336&nbsp;&nbsp;</dd><dd>出版社:北京：九州出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.04&nbsp;&nbsp;</dd><dd>简介:本书择取历史转折关头发生的若干重大事件，对邓小平的奋斗足迹和历史贡献进行了较为具体、细致、客观的描述，展示了邓小平的人格魅力和为祖国富强，人民幸福而勇往直前、奋斗不已的革命精神和高尚情怀，具有很强的可读性和感染力。本书由中共中央党校出版社于2000年1月出版，我社在此版基础上经过认真审读，再次出版。&nbsp;&nbsp;</dd><dd>主题词:邓小平（1904-1997）-生平事迹&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010706">邓小平</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070632">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title34" name="f[34].title" value="中共选择了毛泽东"/>
+							<input type="hidden" id="url34" name="f[34].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011757507&d=FEEBAF109CA5FE55DCA65DE77770DBA0&fenlei=01070532"/>  
+							<input type="hidden" id="memo34" name="f[34].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666266636A626367665997A8AB9CA859643130353030313133' width=75 border=1></TD><TD><dd>作者:曹英著&nbsp;&nbsp;</dd><dd>页数:544&nbsp;&nbsp;</dd><dd>出版社:北京：华文出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>简介:本书对近年从苏联、共产国际及国内解密的档案条分缕析，以中共中央常委级别的权力人物的沉浮起落为主线，细致记录他们如何上台、在台上如何作为、如何下台及下台后的政治与人生命运，直面功过是非，使鲜为人知、人所错知误见的历史事件与人物客观铺陈在读者面前，令人触目惊&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-传记&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid34" name="f[34].dxid" value="000011757507"/>
+							<input type="hidden" id="ssid34" name="f[34].ssid" value="13307043"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011757507&d=FEEBAF109CA5FE55DCA65DE77770DBA0&fenlei=01070532" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=64666266636A626367665997A8AB9CA859643130353030313133" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011757507&d=FEEBAF109CA5FE55DCA65DE77770DBA0&fenlei=01070532" target="_blank">《中共选择了毛泽东》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011757507&unitid=1247&d=51288794F8B3D35069AB87EC01A853D9&timestr=1567738446290" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011757507&ssnum=13307043&d=B5CBED75F78F1EC2CA162066D54A271E&fenlei=01070532" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:曹英著&nbsp;&nbsp;</dd><dd>页数:544&nbsp;&nbsp;</dd><dd>出版社:北京：华文出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>简介:本书对近年从苏联、共产国际及国内解密的档案条分缕析，以中共中央常委级别的权力人物的沉浮起落为主线，细致记录他们如何上台、在台上如何作为、如何下台及下台后的政治与人生命运，直面功过是非，使鲜为人知、人所错知误见的历史事件与人物客观铺陈在读者面前，令人触目惊&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-传记&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070532">传记</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title35" name="f[35].title" value="知情者细说毛泽东"/>
+							<input type="hidden" id="url35" name="f[35].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011757619&d=2CCDFC29D74A4AD5424F52BD0555DA52&fenlei=01070534"/>  
+							<input type="hidden" id="memo35" name="f[35].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6466626666686265666A5997A8AB9CA859643130353030313133' width=75 border=1></TD><TD><dd>作者:余玮著&nbsp;&nbsp;</dd><dd>页数:336&nbsp;&nbsp;</dd><dd>出版社:北京：团结出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹-文集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid35" name="f[35].dxid" value="000011757619"/>
+							<input type="hidden" id="ssid35" name="f[35].ssid" value="13335237"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011757619&d=2CCDFC29D74A4AD5424F52BD0555DA52&fenlei=01070534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6466626666686265666A5997A8AB9CA859643130353030313133" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011757619&d=2CCDFC29D74A4AD5424F52BD0555DA52&fenlei=01070534" target="_blank">《知情者细说毛泽东》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011757619&unitid=1247&d=6A39238C87759F83CE10C922A6EA0AC8&timestr=1567738446290" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011757619&ssnum=13335237&d=6AAC93D5ECE4A4CB5A5B6115D4762561&fenlei=01070534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:余玮著&nbsp;&nbsp;</dd><dd>页数:336&nbsp;&nbsp;</dd><dd>出版社:北京：团结出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.06&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-生平事迹-文集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070534">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title36" name="f[36].title" value="博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《社会主义从空想到科学的发展》导读"/>
+							<input type="hidden" id="url36" name="f[36].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016535493&d=95F739BD976291B0B17969450E99063A&fenlei=01080103"/>  
+							<input type="hidden" id="memo36" name="f[36].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646762656563626C68685997A8AB9CA859643130353030313133' width=75 border=1></TD><TD><dd>作者:张娅著；艾四林编&nbsp;&nbsp;</dd><dd>页数:113&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<社会主义从空想到科学的发展>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《社会主义从空想到科学的发展》-恩格斯著作-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid36" name="f[36].dxid" value="000016535493"/>
+							<input type="hidden" id="ssid36" name="f[36].ssid" value="14220955"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016535493&d=95F739BD976291B0B17969450E99063A&fenlei=01080103" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646762656563626C68685997A8AB9CA859643130353030313133" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016535493&d=95F739BD976291B0B17969450E99063A&fenlei=01080103" target="_blank">《博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《社会主义从空想到科学的发展》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016535493&ssnum=14220955&d=3D4C482C53CEC0ADF41F9323CEBE29B7&fenlei=01080103" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:张娅著；艾四林编&nbsp;&nbsp;</dd><dd>页数:113&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<社会主义从空想到科学的发展>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《社会主义从空想到科学的发展》-恩格斯著作-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080103">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title37" name="f[37].title" value="《关于正确处理人民内部矛盾的问题》导读"/>
+							<input type="hidden" id="url37" name="f[37].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016780986&d=88F880F9800C0AA3D54F405935630A05&fenlei=010804010233"/>  
+							<input type="hidden" id="memo37" name="f[37].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6567615694A5A899A556613130353033393630' width=75 border=1></TD><TD><dd>作者:艾四林著&nbsp;&nbsp;</dd><dd>页数:179&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:本书以导读的形式阐明了提出正确处理人民内部矛盾的历史背景和理论前提，同时深刻论述了人民内部矛盾的性质、具体内容和一系列正确处理方法等等。结合原著作的架构，主题内容涉及：两类不同性质的矛盾；肃反问题；农业合作化问题；工商业者问题；知识分子问题；少数民族问题；统筹兼顾，适当安排；关于百花齐放，百家争鸣，长期共存，互相监督；关于少数人闹事问题；坏事能否变成好事；关于节约；中国工业化的道路。&nbsp;&nbsp;</dd><dd>主题词:《关于正确处理人民内部矛盾的问题》-毛泽东著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid37" name="f[37].dxid" value="000016780986"/>
+							<input type="hidden" id="ssid37" name="f[37].ssid" value="96153571"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016780986&d=88F880F9800C0AA3D54F405935630A05&fenlei=010804010233" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=69665F6165635F6567615694A5A899A556613130353033393630" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016780986&d=88F880F9800C0AA3D54F405935630A05&fenlei=010804010233" target="_blank">《《关于正确处理人民内部矛盾的问题》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016780986&ssnum=96153571&d=DAA0C247E8983CC3651672C4AE678341&fenlei=010804010233" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:艾四林著&nbsp;&nbsp;</dd><dd>页数:179&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:本书以导读的形式阐明了提出正确处理人民内部矛盾的历史背景和理论前提，同时深刻论述了人民内部矛盾的性质、具体内容和一系列正确处理方法等等。结合原著作的架构，主题内容涉及：两类不同性质的矛盾；肃反问题；农业合作化问题；工商业者问题；知识分子问题；少数民族问题；统筹兼顾，适当安排；关于百花齐放，百家争鸣，长期共存，互相监督；关于少数人闹事问题；坏事能否变成好事；关于节约；中国工业化的道路。&nbsp;&nbsp;</dd><dd>主题词:《关于正确处理人民内部矛盾的问题》-毛泽东著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title38" name="f[38].title" value="毛泽东平等思想研究"/>
+							<input type="hidden" id="url38" name="f[38].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016389347&d=B2D0DFC31B48166EB23815A73F99C876&fenlei=010804010636"/>  
+							<input type="hidden" id="memo38" name="f[38].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61645F6262605F6469625694A5A899A556613130353033393630' width=75 border=1></TD><TD><dd>作者:孙进&nbsp;&nbsp;</dd><dd>页数:192&nbsp;&nbsp;</dd><dd>出版社:西安：西安电子科技大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:本书对毛泽东思想进行了平等思想的研究, 是博士论文。毛泽东平等思想是毛泽东思想的重要组成部分。毛泽东一生都致力于为中国建立一个自由平等的社会而不断探索和实践, 给我们留下了丰富的思想遗产。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-平等观-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid38" name="f[38].dxid" value="000016389347"/>
+							<input type="hidden" id="ssid38" name="f[38].ssid" value="14220492"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016389347&d=B2D0DFC31B48166EB23815A73F99C876&fenlei=010804010636" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61645F6262605F6469625694A5A899A556613130353033393630" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016389347&d=B2D0DFC31B48166EB23815A73F99C876&fenlei=010804010636" target="_blank">《毛泽东平等思想研究》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016389347&ssnum=14220492&d=30091BD9CEAD636B376E25E651ED4D4F&fenlei=010804010636" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:孙进&nbsp;&nbsp;</dd><dd>页数:192&nbsp;&nbsp;</dd><dd>出版社:西安：西安电子科技大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:本书对毛泽东思想进行了平等思想的研究, 是博士论文。毛泽东平等思想是毛泽东思想的重要组成部分。毛泽东一生都致力于为中国建立一个自由平等的社会而不断探索和实践, 给我们留下了丰富的思想遗产。&nbsp;&nbsp;</dd><dd>主题词:毛泽东思想-平等观-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010804">毛泽东思想的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080401">毛泽东著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title39" name="f[39].title" value="到马克思的故乡去"/>
+							<input type="hidden" id="url39" name="f[39].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016867298&d=4BA7D4F2595A7752A1607E77071B4600&fenlei=0108"/>  
+							<input type="hidden" id="memo39" name="f[39].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=716E67696D6D676E6E6E5E9CADB0A1AD5E693130353233313938' width=75 border=1></TD><TD><dd>作者:聂锦芳&nbsp;&nbsp;</dd><dd>页数:212&nbsp;&nbsp;</dd><dd>出版社:广州：广东教育出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.07&nbsp;&nbsp;</dd><dd>简介:本书以作者到马克思的故乡-德国西南部莱茵兰-普法尔茨州的特里尔访学为背景，记录了其一年中对马克思相关事物、材料和思想的所思所想，通过对马克思少年、青年时代材料的分析，从文本和文献的角度对马克思思想的起源进行重新梳理和阐释，有利于矫正长期以来形成的误读和曲解。本书在内容上分为六章，包括特里尔的访学经历“古迹·风景”“小镇生活”“大学风貌”“故居现状”及对马克思思想形成起源期的思考“文献钩沉”“当代思索”。书内配有大量真实照片，图文并茂，在内容上既有理据又通俗易懂，适合大众阅读。&nbsp;&nbsp;</dd><dd>主题词:马克思（Marx,Karl1818～1883）-人物研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid39" name="f[39].dxid" value="000016867298"/>
+							<input type="hidden" id="ssid39" name="f[39].ssid" value="96155666"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016867298&d=4BA7D4F2595A7752A1607E77071B4600&fenlei=0108" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=716E67696D6D676E6E6E5E9CADB0A1AD5E693130353233313938" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016867298&d=4BA7D4F2595A7752A1607E77071B4600&fenlei=0108" target="_blank">《到马克思的故乡去》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016867298&ssnum=96155666&d=C9920B637FF3D21B46E722DCD31878C9&fenlei=0108" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:聂锦芳&nbsp;&nbsp;</dd><dd>页数:212&nbsp;&nbsp;</dd><dd>出版社:广州：广东教育出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.07&nbsp;&nbsp;</dd><dd>简介:本书以作者到马克思的故乡-德国西南部莱茵兰-普法尔茨州的特里尔访学为背景，记录了其一年中对马克思相关事物、材料和思想的所思所想，通过对马克思少年、青年时代材料的分析，从文本和文献的角度对马克思思想的起源进行重新梳理和阐释，有利于矫正长期以来形成的误读和曲解。本书在内容上分为六章，包括特里尔的访学经历“古迹·风景”“小镇生活”“大学风貌”“故居现状”及对马克思思想形成起源期的思考“文献钩沉”“当代思索”。书内配有大量真实照片，图文并茂，在内容上既有理据又通俗易懂，适合大众阅读。&nbsp;&nbsp;</dd><dd>主题词:马克思（Marx,Karl1818～1883）-人物研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title40" name="f[40].title" value="西南地区马克思主义理论学科第五届研究所生论坛论文集"/>
+							<input type="hidden" id="url40" name="f[40].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016978126&d=48BE38C2BBCEA42B9365D8D104189EB4&fenlei=01"/>  
+							<input type="hidden" id="memo40" name="f[40].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B6D6E676B716D5E9CADB0A1AD5E693130353233313938' width=75 border=1></TD><TD><dd>作者:黄蓉生著&nbsp;&nbsp;</dd><dd>页数:430&nbsp;&nbsp;</dd><dd>出版社:重庆：西南师范大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.12&nbsp;&nbsp;</dd><dd>简介:西南地区普通高校联合举办了马克思主义理论学科第五届研究生论坛，共收到来自西南地区十多所高校研究生的很多论文，其中评选出获奖论文多篇集结成稿。《西南地区马克思主义理论学科第五届研究生论坛论文集》所选文章对传播新时代大学生的马克思注意理论研究成果，帮助大学生树立正确的马克思主义观有很大的帮助；比较全面地反映了西南地区高校研究生的马克思主义理论研究的水平及*成果。其中一、二等奖全文展示，摘录了三等奖的内容提要。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid40" name="f[40].dxid" value="000016978126"/>
+							<input type="hidden" id="ssid40" name="f[40].ssid" value="14356395"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016978126&d=48BE38C2BBCEA42B9365D8D104189EB4&fenlei=01" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C676B6D6E676B716D5E9CADB0A1AD5E693130353233313938" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016978126&d=48BE38C2BBCEA42B9365D8D104189EB4&fenlei=01" target="_blank">《西南地区马克思主义理论学科第五届研究所生论坛论文集》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016978126&ssnum=14356395&d=0ED01E616B5BEF45F99D134F825EC31F&fenlei=01" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:黄蓉生著&nbsp;&nbsp;</dd><dd>页数:430&nbsp;&nbsp;</dd><dd>出版社:重庆：西南师范大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.12&nbsp;&nbsp;</dd><dd>简介:西南地区普通高校联合举办了马克思主义理论学科第五届研究生论坛，共收到来自西南地区十多所高校研究生的很多论文，其中评选出获奖论文多篇集结成稿。《西南地区马克思主义理论学科第五届研究生论坛论文集》所选文章对传播新时代大学生的马克思注意理论研究成果，帮助大学生树立正确的马克思主义观有很大的帮助；比较全面地反映了西南地区高校研究生的马克思主义理论研究的水平及*成果。其中一、二等奖全文展示，摘录了三等奖的内容提要。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-理论研究-文集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title41" name="f[41].title" value="马克思主义理论研究  10"/>
+							<input type="hidden" id="url41" name="f[41].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016588361&d=B68FB3629A68D8F2E0850B2D8491D290&fenlei=010801"/>  
+							<input type="hidden" id="memo41" name="f[41].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C67696F6F676B70705E9CADB0A1AD5E693130353233313938' width=75 border=1></TD><TD><dd>作者:陈华兴，黄宇，唐晓燕编&nbsp;&nbsp;</dd><dd>页数:293&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江工商大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.04&nbsp;&nbsp;</dd><dd>简介:为了加强浙江省中国特色社会主义理论研究中心的建设，为浙江省马克思主义理论研究和建设工程提供交流平台，浙江省社科院特每年推出此书一本。陈华兴主编的《马克思主义理论研究(Ⅹ)》选取了第十届浙江省马克思主义理论研讨会的**论文30余篇，文章理论结合实际，在一定程度上反映了全省马克思主义理论研究的成果，及时反映了浙江省马克思主义理论研究，特别是马克思主义中国化理论研究的进展情况，为马克思主义理论研究和建设工程做出了一定贡献。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-理论研究-文集&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid41" name="f[41].dxid" value="000016588361"/>
+							<input type="hidden" id="ssid41" name="f[41].ssid" value="14177388"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016588361&d=B68FB3629A68D8F2E0850B2D8491D290&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=696C67696F6F676B70705E9CADB0A1AD5E693130353233313938" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016588361&d=B68FB3629A68D8F2E0850B2D8491D290&fenlei=010801" target="_blank">《马克思主义理论研究  10》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016588361&ssnum=14177388&d=4858308B46275F340B50787F66912BAC&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:陈华兴，黄宇，唐晓燕编&nbsp;&nbsp;</dd><dd>页数:293&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江工商大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.04&nbsp;&nbsp;</dd><dd>简介:为了加强浙江省中国特色社会主义理论研究中心的建设，为浙江省马克思主义理论研究和建设工程提供交流平台，浙江省社科院特每年推出此书一本。陈华兴主编的《马克思主义理论研究(Ⅹ)》选取了第十届浙江省马克思主义理论研讨会的**论文30余篇，文章理论结合实际，在一定程度上反映了全省马克思主义理论研究的成果，及时反映了浙江省马克思主义理论研究，特别是马克思主义中国化理论研究的进展情况，为马克思主义理论研究和建设工程做出了一定贡献。&nbsp;&nbsp;</dd><dd>主题词:马克思主义-理论研究-文集&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title42" name="f[42].title" value="博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《神圣家族》导读"/>
+							<input type="hidden" id="url42" name="f[42].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016535211&d=6BEC7D467E197D0A6924E337093B483B&fenlei=010801010234"/>  
+							<input type="hidden" id="memo42" name="f[42].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964676765646D6A6C5B99AAAD9EAA5B663130353237303435' width=75 border=1></TD><TD><dd>作者:宋永平，刘晓勇著；艾四林编&nbsp;&nbsp;</dd><dd>页数:184&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<神圣家族>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《神圣家族》-马恩著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid42" name="f[42].dxid" value="000016535211"/>
+							<input type="hidden" id="ssid42" name="f[42].ssid" value="14220857"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016535211&d=6BEC7D467E197D0A6924E337093B483B&fenlei=010801010234" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=666964676765646D6A6C5B99AAAD9EAA5B663130353237303435" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016535211&d=6BEC7D467E197D0A6924E337093B483B&fenlei=010801010234" target="_blank">《博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《神圣家族》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016535211&ssnum=14220857&d=DF2C12DE67BA5BA3BC62E242459DDDB2&fenlei=010801010234" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:宋永平，刘晓勇著；艾四林编&nbsp;&nbsp;</dd><dd>页数:184&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<神圣家族>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《神圣家族》-马恩著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title43" name="f[43].title" value="博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《黑格尔法哲学批判》导读"/>
+							<input type="hidden" id="url43" name="f[43].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016535216&d=168493944B09D7ACA06E8285547AA653&fenlei=01080101"/>  
+							<input type="hidden" id="memo43" name="f[43].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=66696467676B646B666D5B99AAAD9EAA5B663130353237303435' width=75 border=1></TD><TD><dd>作者:何历宇著；艾四林编&nbsp;&nbsp;</dd><dd>页数:152&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<黑格尔法哲学批判>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《黑格尔法哲学批判》-马克思著作研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid43" name="f[43].dxid" value="000016535216"/>
+							<input type="hidden" id="ssid43" name="f[43].ssid" value="14226618"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016535216&d=168493944B09D7ACA06E8285547AA653&fenlei=01080101" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=66696467676B646B666D5B99AAAD9EAA5B663130353237303435" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016535216&d=168493944B09D7ACA06E8285547AA653&fenlei=01080101" target="_blank">《博学文库中组部推荐全国党员教育培训优秀教材  马克思主义经典著作导读丛书  第2辑  《黑格尔法哲学批判》导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016535216&ssnum=14226618&d=79E26AF31B5948F99FAC20DF90AC0026&fenlei=01080101" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:何历宇著；艾四林编&nbsp;&nbsp;</dd><dd>页数:152&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.01&nbsp;&nbsp;</dd><dd>简介:经典阅读有资政育人之功效。《<黑格尔法哲学批判>导读》力求从理论与现实、理论与实践的独特层面，重点把握经典作家的思想全貌及其作品的深厚底蕴，以写作背景、成书过程和出版、全书结构、主要内容和观点及其历史影响和当代现实意义等为基础脉络，对马克思主义经典著作进行了原创性的解读和剖析，以使读者能系统掌握贯穿经典著作中的马克思主义立场、观点和方法，深化对马克思主义理论的理解，强化其用马克思主义基本原理观察并分析政治、经济、思想文化等社会现实问题的能力，从而深刻理解中国特色社会主义理论体系重大理论意义和实践意义。&nbsp;&nbsp;</dd><dd>主题词:《黑格尔法哲学批判》-马克思著作研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title44" name="f[44].title" value="中国革命和中国共产党  导读"/>
+							<input type="hidden" id="url44" name="f[44].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000016838896&d=71FCEFF0AAEA24F1E91558F61AA2E4FB&fenlei=01040204"/>  
+							<input type="hidden" id="memo44" name="f[44].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C696264686662686A655997A8AB9CA859643130353135353033' width=75 border=1></TD><TD><dd>作者:艾四林著&nbsp;&nbsp;</dd><dd>页数:154&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:《<中国革命和中国共产党>导读》系我社《马克思主义经典著作导读丛书》（第二辑）中的一种，*辑10种出版以来，受到了社会各界的关注和青眯。《中国革命和中国共产党》是*在抗日战争时期所写的关于中国社会矛盾和革命对象、任务、动力及性质的政治著作。本书以原著为蓝本，对原著的写作背景与出版过程、主要内容、主要概念、现实意义与指导作用进行系统解读，对中国社会古今发展历程以及中国革命与中国共产党在其中所起的作用进行全面介绍，从而帮助读者对中国革命和中国共产党有更加深刻的认识。&nbsp;&nbsp;</dd><dd>主题词:中国共产党-毛泽东著&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid44" name="f[44].dxid" value="000016838896"/>
+							<input type="hidden" id="ssid44" name="f[44].ssid" value="96153572"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000016838896&d=71FCEFF0AAEA24F1E91558F61AA2E4FB&fenlei=01040204" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=6C696264686662686A655997A8AB9CA859643130353135353033" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000016838896&d=71FCEFF0AAEA24F1E91558F61AA2E4FB&fenlei=01040204" target="_blank">《中国革命和中国共产党  导读》</a>
+									
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000016838896&ssnum=96153572&d=1EEB214887865C45B20574E972521178&fenlei=01040204" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:艾四林著&nbsp;&nbsp;</dd><dd>页数:154&nbsp;&nbsp;</dd><dd>出版社:北京：中国民主法制出版社&nbsp;&nbsp;</dd><dd>出版日期:2017.09&nbsp;&nbsp;</dd><dd>简介:《<中国革命和中国共产党>导读》系我社《马克思主义经典著作导读丛书》（第二辑）中的一种，*辑10种出版以来，受到了社会各界的关注和青眯。《中国革命和中国共产党》是*在抗日战争时期所写的关于中国社会矛盾和革命对象、任务、动力及性质的政治著作。本书以原著为蓝本，对原著的写作背景与出版过程、主要内容、主要概念、现实意义与指导作用进行系统解读，对中国社会古今发展历程以及中国革命与中国共产党在其中所起的作用进行全面介绍，从而帮助读者对中国革命和中国共产党有更加深刻的认识。&nbsp;&nbsp;</dd><dd>主题词:中国共产党-毛泽东著&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0104">毛泽东著作</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010402">单行著作</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01040204">抗日战争时期(1937年7月~1945年8月)</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title45" name="f[45].title" value="卡尔·马克思，人类学家"/>
+							<input type="hidden" id="url45" name="f[45].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000015028947&d=41F227AA102D0464A4EC235B344070BC&fenlei=010801010632"/>  
+							<input type="hidden" id="memo45" name="f[45].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646662686C66626665645997A8AB9CA859643130353135353033' width=75 border=1></TD><TD><dd>作者:（美）帕特森著&nbsp;&nbsp;</dd><dd>页数:300&nbsp;&nbsp;</dd><dd>出版社:昆明：云南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.12&nbsp;&nbsp;</dd><dd>简介:本书对培根、洛克、休谟、笛卡尔、康德、黑格尔等关于必然与自由的命题进行研究探索。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-文化人类学-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid45" name="f[45].dxid" value="000015028947"/>
+							<input type="hidden" id="ssid45" name="f[45].ssid" value="13593321"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000015028947&d=41F227AA102D0464A4EC235B344070BC&fenlei=010801010632" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646662686C66626665645997A8AB9CA859643130353135353033" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000015028947&d=41F227AA102D0464A4EC235B344070BC&fenlei=010801010632" target="_blank">《卡尔·马克思，人类学家》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000015028947&unitid=1247&d=6479F341F8AD968AD398A4F6FE1319D3&timestr=1567738446294" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000015028947&ssnum=13593321&d=FCD76645AC3D71285595133767B314DB&fenlei=010801010632" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:（美）帕特森著&nbsp;&nbsp;</dd><dd>页数:300&nbsp;&nbsp;</dd><dd>出版社:昆明：云南大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.12&nbsp;&nbsp;</dd><dd>简介:本书对培根、洛克、休谟、笛卡尔、康德、黑格尔等关于必然与自由的命题进行研究探索。&nbsp;&nbsp;</dd><dd>主题词:马克思主义理论-文化人类学-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01080101">马克思、恩格斯著作的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title46" name="f[46].title" value="蒋介石与毛泽东合作岁月"/>
+							<input type="hidden" id="url46" name="f[46].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011720195&d=C56DC90DFF4B51F8A4EF84BFD2876411&fenlei=01070534"/>  
+							<input type="hidden" id="memo46" name="f[46].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646662656368626469645997A8AB9CA859643130353135353033' width=75 border=1></TD><TD><dd>作者:王相坤著&nbsp;&nbsp;</dd><dd>页数:327&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:本书从全新的视角，记述了中国共产党和中国国民党的领导人毛泽东与蒋介石之间的沟通、合作以及斗争的历史事件和过程。包括大革命时期、西安事变前后、抗日战争时期、五六十年代、七十年代等终二人一生的各个历史时期。&nbsp;&nbsp;</dd><dd>主题词:蒋介石（1887～1975）-生平事迹-毛泽东（1893～1976）&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid46" name="f[46].dxid" value="000011720195"/>
+							<input type="hidden" id="ssid46" name="f[46].ssid" value="13205161"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011720195&d=C56DC90DFF4B51F8A4EF84BFD2876411&fenlei=01070534" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=646662656368626469645997A8AB9CA859643130353135353033" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011720195&d=C56DC90DFF4B51F8A4EF84BFD2876411&fenlei=01070534" target="_blank">《蒋介石与毛泽东合作岁月》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011720195&unitid=1247&d=36B254DEC4DA321C44C27D894CE78D05&timestr=1567738446294" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011720195&ssnum=13205161&d=06B5AAAABAB6F4D168037BECE117B985&fenlei=01070534" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:王相坤著&nbsp;&nbsp;</dd><dd>页数:327&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:本书从全新的视角，记述了中国共产党和中国国民党的领导人毛泽东与蒋介石之间的沟通、合作以及斗争的历史事件和过程。包括大革命时期、西安事变前后、抗日战争时期、五六十年代、七十年代等终二人一生的各个历史时期。&nbsp;&nbsp;</dd><dd>主题词:蒋介石（1887～1975）-生平事迹-毛泽东（1893～1976）&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070534">生平事迹、回忆录</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title47" name="f[47].title" value="毛泽东家居  一代伟人家居生活的全景呈现"/>
+							<input type="hidden" id="url47" name="f[47].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011724578&d=D7253C54AEA6A993BF2624BD67727A20&fenlei=010705"/>  
+							<input type="hidden" id="memo47" name="f[47].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6263605F6168675694A5A899A556613130353139333530' width=75 border=1></TD><TD><dd>作者:龙剑宇著&nbsp;&nbsp;</dd><dd>页数:381&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:毛泽东早年大量生活物品保存在韶山，晚年在中南海的大部分生活物品也回归韶山。本书作者是韶山毛泽东纪念馆副馆长，十年功夫每天就是和这些物品打交道——分类、整理、修复、维护，并挖掘它们的来龙去脉和背后故事。本书以毛泽东家居遗物为线索，呈现一代伟人平凡又不平凡的……&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893～1976）-革命文物-介绍&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid47" name="f[47].dxid" value="000011724578"/>
+							<input type="hidden" id="ssid47" name="f[47].ssid" value="13230187"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011724578&d=D7253C54AEA6A993BF2624BD67727A20&fenlei=010705" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6263605F6168675694A5A899A556613130353139333530" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011724578&d=D7253C54AEA6A993BF2624BD67727A20&fenlei=010705" target="_blank">《毛泽东家居  一代伟人家居生活的全景呈现》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011724578&unitid=1247&d=77928EE0FEFA93A810D6F52D6F3B79BE&timestr=1567738446295" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011724578&ssnum=13230187&d=D9D62B07945792D6FD8447CBDC6FA4CF&fenlei=010705" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:龙剑宇著&nbsp;&nbsp;</dd><dd>页数:381&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:毛泽东早年大量生活物品保存在韶山，晚年在中南海的大部分生活物品也回归韶山。本书作者是韶山毛泽东纪念馆副馆长，十年功夫每天就是和这些物品打交道——分类、整理、修复、维护，并挖掘它们的来龙去脉和背后故事。本书以毛泽东家居遗物为线索，呈现一代伟人平凡又不平凡的……&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893～1976）-革命文物-介绍&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title48" name="f[48].title" value="拜物教批判理论与整体马克思"/>
+							<input type="hidden" id="url48" name="f[48].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000012478760&d=3A012048CC5C5E1C22B15A96CDE3E607&fenlei=010801"/>  
+							<input type="hidden" id="memo48" name="f[48].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6367625F6265635694A5A899A556613130353139333530' width=75 border=1></TD><TD><dd>作者:刘召峰著&nbsp;&nbsp;</dd><dd>页数:213&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.08&nbsp;&nbsp;</dd><dd>简介:拜物教批判理论是最近我国学术界特别是马克思主义哲学界的热门话题之一。首先，本书依据《马克思恩格斯全集》历史考证版第二版(MEGA2)第四部分提供的资料和《马克思恩格斯全集》德文版，对马克思的“拜物教”概念进行了认真的考辨，区分了“崇拜”物、对物“顶礼膜拜”与指称一种“错认”的“拜物教观念”，特别是区分了商品、货币和资本所固有的“拜物教性质”与人们的“拜物教观念”；接着，本书系统梳理了马克思对商品、货币和资本的拜物教性质的分析，以及对“经济学家”的拜物教观念的批判；进而，本书阐述了拜物教批判理论对于理解马克思的经济学、哲学、共产主义学说和思想历程的独特价值；最后，本书指出了拜物教批判理论之于重新阐释马克思理论学说的内在逻辑、实现对马克思思想的“整体把握”的重要意义。&nbsp;&nbsp;</dd><dd>主题词:拜物教-批判-马克思主义理论-研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid48" name="f[48].dxid" value="000012478760"/>
+							<input type="hidden" id="ssid48" name="f[48].ssid" value="13372253"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000012478760&d=3A012048CC5C5E1C22B15A96CDE3E607&fenlei=010801" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6367625F6265635694A5A899A556613130353139333530" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000012478760&d=3A012048CC5C5E1C22B15A96CDE3E607&fenlei=010801" target="_blank">《拜物教批判理论与整体马克思》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000012478760&unitid=1247&d=DC6188EB8B5228BBE47760BC1A975548&timestr=1567738446295" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000012478760&ssnum=13372253&d=DBC990B60C6099E6641657BA4177BB2A&fenlei=010801" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:刘召峰著&nbsp;&nbsp;</dd><dd>页数:213&nbsp;&nbsp;</dd><dd>出版社:杭州：浙江大学出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.08&nbsp;&nbsp;</dd><dd>简介:拜物教批判理论是最近我国学术界特别是马克思主义哲学界的热门话题之一。首先，本书依据《马克思恩格斯全集》历史考证版第二版(MEGA2)第四部分提供的资料和《马克思恩格斯全集》德文版，对马克思的“拜物教”概念进行了认真的考辨，区分了“崇拜”物、对物“顶礼膜拜”与指称一种“错认”的“拜物教观念”，特别是区分了商品、货币和资本所固有的“拜物教性质”与人们的“拜物教观念”；接着，本书系统梳理了马克思对商品、货币和资本的拜物教性质的分析，以及对“经济学家”的拜物教观念的批判；进而，本书阐述了拜物教批判理论对于理解马克思的经济学、哲学、共产主义学说和思想历程的独特价值；最后，本书指出了拜物教批判理论之于重新阐释马克思理论学说的内在逻辑、实现对马克思思想的“整体把握”的重要意义。&nbsp;&nbsp;</dd><dd>主题词:拜物教-批判-马克思主义理论-研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0108">马克思主义、列宁主义、毛泽东思想、邓小平理论的学习和研究</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010801">马克思主义的学习和研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+						<li>
+							<input type="hidden" id="title49" name="f[49].title" value="毛泽东幽默趣谈"/>
+							<input type="hidden" id="url49" name="f[49].url" value="http://book.duxiu.com/bookDetail.jsp?dxNumber=000011708288&d=1121F338DDC04BF7F5DD7A8CD7FF6334&fenlei=01070533"/>  
+							<input type="hidden" id="memo49" name="f[49].memo" value="<TABLE><TR><TD><IMG height=110 alt=封面 src='http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6263665F6065615694A5A899A556613130353139333530' width=75 border=1></TD><TD><dd>作者:许祖范，姚佩莲，胡东编著&nbsp;&nbsp;</dd><dd>页数:343&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:本书分神州·沃土篇、求是·存真篇、智慧·谋略篇、壮志·豪情篇、警钟·借喻篇、治国·安邦篇、科学·文史篇、外交·魅力篇、礼贤·爱友篇、姓名·趣谈篇、童趣·理想篇、爱情·家庭篇、故土·乡情篇、生活·风范篇14部分。此书并不浓墨重彩于伟人日常用语之“幽默”，也不着力于渲染伟人生活轶事之“趣谈”，而是试图在更广阔的领域从幽默趣谈而高于幽默趣谈的角度，反映这位伟人光辉的一生。该书1995年在山东人民出版社出版，2013年是毛泽东诞辰120周年，值此时机，将此书再版有一定的意义。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-人物研究&nbsp;&nbsp;</dd></TD></TR></TBODY></TABLE>"/> 
+							<input type="hidden" id="dxid49" name="f[49].dxid" value="000011708288"/>
+							<input type="hidden" id="ssid49" name="f[49].ssid" value="13236051"/>
+							<div class="divImg">
+								<a href="bookDetail.jsp?dxNumber=000011708288&d=1121F338DDC04BF7F5DD7A8CD7FF6334&fenlei=01070533" target="_blank"><img alt="封面" src="http://unicover.duxiu.com/coverNew/CoverNew.dll?iid=61635F6263665F6065615694A5A899A556613130353139333530" /></a>
+							</div>
+							
+							<dl>
+								<dt>
+									
+										<a href="bookDetail.jsp?dxNumber=000011708288&d=1121F338DDC04BF7F5DD7A8CD7FF6334&fenlei=01070533" target="_blank">《毛泽东幽默趣谈》</a>
+									&nbsp;&nbsp;<a href="/goreadbookgc.jsp?dxid=000011708288&unitid=1247&d=C278982FE39FEA5A32F054CC09AAA1F7&timestr=1567738446295" target="_blank"><img src="/images/libbook.gif" border="0" /></a>
+												
+
+														&nbsp;&nbsp;<a href="/goreadbaoku.jsp?dxid=000011708288&ssnum=13236051&d=2B498300B44D2559030DE0CDEF091C37&fenlei=01070533" target="_blank">
+														<img src="/images/readAll_bk.jpg" border="0" /></a>
+													
+								</dt>
+								<dd>作者:许祖范，姚佩莲，胡东编著&nbsp;&nbsp;</dd><dd>页数:343&nbsp;&nbsp;</dd><dd>出版社:北京：中共党史出版社&nbsp;&nbsp;</dd><dd>出版日期:2013.03&nbsp;&nbsp;</dd><dd>简介:本书分神州·沃土篇、求是·存真篇、智慧·谋略篇、壮志·豪情篇、警钟·借喻篇、治国·安邦篇、科学·文史篇、外交·魅力篇、礼贤·爱友篇、姓名·趣谈篇、童趣·理想篇、爱情·家庭篇、故土·乡情篇、生活·风范篇14部分。此书并不浓墨重彩于伟人日常用语之“幽默”，也不着力于渲染伟人生活轶事之“趣谈”，而是试图在更广阔的领域从幽默趣谈而高于幽默趣谈的角度，反映这位伟人光辉的一生。该书1995年在山东人民出版社出版，2013年是毛泽东诞辰120周年，值此时机，将此书再版有一定的意义。&nbsp;&nbsp;</dd><dd>主题词:毛泽东（1893-1976）-人物研究&nbsp;&nbsp;</dd>
+								<dd>&nbsp;<b>分类</b>:&nbsp;<span id=m_fl><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=0107">马克思、恩格斯、列宁、斯大林、毛泽东、邓小平生平和传记</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=010705">毛泽东</a>-><a href="advsearch?channel=advsearch&rn=50&ecode=utf-8&Field=&btype=&&fenleiID=01070533">阐述、研究</a></span></dd>
+
+							</dl>
+						</li> 
+					
+					</ul>
+				</div>
+				
+					<div id="pageinfo" class="pagination">
+					<b class="cur">1</b><a class=px14 href="advsearch?Pages=2&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">2</a><a class=px14 href="advsearch?Pages=3&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">3</a><a class=px14 href="advsearch?Pages=4&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">4</a><a class=px14 href="advsearch?Pages=5&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">5</a><a class=px14 href="advsearch?Pages=6&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">6</a><a class=px14 href="advsearch?Pages=7&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">7</a><a class=px14 href="advsearch?Pages=2&rn=50&ecode=utf-8&fenleiID=01&Sort=&channel=search#searchinfo">下一页</a>
+					</div>
+					
+			</div>
+		</div>
+
+		<form name="fav_one" method="post" action="http://mylib.duxiu.com/a/f.action" target="_blank">
+		   <input type="hidden" name="f[0].title" id="titlefav" value=""/>
+		   <input type="hidden" name="f[0].url" id="urlfav" value=""/>
+		   <input type="hidden" name="f[0].memo" id="memofav" value=""/> 
+		   <input type="hidden" name="f[0].dxid" id="dxidfav" value=""/> 
+		   <input type="hidden" name="f[0].ssid" id="ssidfav" value=""/>
+		   <input type="hidden" name="f[0].classify" id="classifyfav" value="1"/>  
+		    <input type="hidden" name="ec" value="gbk"/>
+		</form>
+	
+
+<form id="downexecl" name="downexecl"   method="post" action="viewsave.jsp">
+	<input id="dxidskey" name="dxidskey" value="725f00d463e6a9339fc5c8158e42c9c1bb56c79fba04c1b889ce87a77c6410f74b9209142b98d3fbfcd80d196e06486016fbd4b17f4796fe695fed8790a528accd4431edf9a1229446de9472e6a362c0102ff9a524285dd6586f020137909fff726bcdff1ef94b47163013efdbfa34d8e65b07236b818d8c1117e4945ee8ca4907e6f4077681481ab0d68fdc0072f45b6abef81f36470b0e16c635045b8e4a74de0847ca1f45f8d0a485c3a0aaab615c8053e7d184ce34c3edb747c46aa5bfed1391fd12590236156d764be5f33a9db3dceae6fe76c61736b7f1aa6cafc9df343e097ccc24db7d72bf4f9b9ed2da9b6c1b9215f8333df63bbd5076d6f95ec0bcb30463faf7f21af1ff5594155857d14a9f8034f93246b18408d3d16e7862e4e00cebf4a30a4dbd461b7b0a2854acdeb01543e5b59adf429f334f901c86ab7d3f08e1743e8fc4207dfb39ac41ca1a11d40f7cb584b32090d312ae9947be213e8c5c680df65d7295deb30463faf7f21af15651e800d599f1bb0067cac2e878a4fcf77b887fe6e0dfd4cbe19f964675177445ff8e17e285777fe333dd043d449f67d2cda8d460a1d6fbde9b59aabb86a0f631f7d6a8c5c3678b2fb0af7edd711ec82c1c6e259c3b18cdad81c9de176e4a101c58352754ef66fe48b515c63bbbcdcce6751abe7572f0b5f79d7626a7a949683241fd45e1a5df18d7f68aaae988973d512a4bbb475166691e8b4c0cea99e70608e1743e8fc4207dd4e72c3bec51b581c8b1ddb5302a3255bbaf600ae5d3e0fffe57013a9b9ad47a92d502134490127b3b831e968e9b0182e067b58517d60b72bdcb4a8572f2e5fb2b65ee71e4c0ca506eb66500145189c6e0d9e796ff6b684914d29f91e07e080e6cbb75c5bf374df330105e503c2ed53482db5b06a8209e07cfc75281fbd4ddeb6FA6FD80CE0997F8C267D75CBD3FB12C" type="hidden"/>
+	<input id="dxids" name="dxids" value="" type="hidden"/>
+</form>
+
+	
+
+
+<div class="footer">
+		
+	<p>免责声明：读秀 
+	不承担任何有内容服务商提供的信息所引起的争议和法律责任，一切争议和法律责任请与内容服务商联系</p>
+	<p>
+		<script>
+			var cDate = new Date();
+			document.write(" ©  "+cDate.getFullYear());
+		</script>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		读秀
+			&nbsp;&nbsp;&nbsp;&nbsp;京ICP备13002504号-3&nbsp;&nbsp;&nbsp;&nbsp;
+			<img src="http://www.duxiu.com/images/gab.png" style="vertical-align:middle; margin:0 5px 5px 0;" />京公网安备&nbsp;&nbsp;11010802021840
+		
+	</p>
+</div>
+<script type="text/javascript">
+var loclhost=document.location.href;
+if(loclhost.indexOf("duxiu")!=-1){
+	window.onload=function(){
+		document.onmousemove=function(){}; 
+		try{
+			if(location.href.length>35 && location.href.indexOf(".jsp?")==-1){
+				document.onmousedown=recordobj;
+				document.ondblclick=dbclick; 
+				document.onmouseup=showselect;
+			}
+		}catch(ex){}
+	}
+}
+</script>
+<div class="placed" id="headTop"><a href="#"><img src="/images/newbook/ZDtop.png" width="30" height="30" /></a></div><!-- 置顶 -->
+<div style = "display: none;">
+	<script src="http://s11.cnzz.com/stat.php?id=2088844&web_id=2088844&show=pic" language="JavaScript"></script>
+</div>
+
+
+
+
+<div style = "display: none;">
+	<script src="http://s11.cnzz.com/stat.php?id=2088844&web_id=2088844&show=pic" language="JavaScript"></script>
+</div>
+</body></html>
